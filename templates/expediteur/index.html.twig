@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Expediteur index{% endblock %}
+
+{% block body %}
+    <h1>Expediteur index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_entreprise_individu</th>
+                <th>Telephone</th>
+                <th>Email</th>
+                <th>Pays</th>
+                <th>Adresse_complete</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for expediteur in expediteurs %}
+            <tr>
+                <td>{{ expediteur.id }}</td>
+                <td>{{ expediteur.nomEntrepriseIndividu }}</td>
+                <td>{{ expediteur.telephone }}</td>
+                <td>{{ expediteur.email }}</td>
+                <td>{{ expediteur.pays }}</td>
+                <td>{{ expediteur.adresseComplete }}</td>
+                <td>
+                    <a href="{{ path('app_expediteur_show', {'id': expediteur.id}) }}">show</a>
+                    <a href="{{ path('app_expediteur_edit', {'id': expediteur.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_expediteur_new') }}">Create new</a>
+{% endblock %}

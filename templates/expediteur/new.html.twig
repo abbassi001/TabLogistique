@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Expediteur{% endblock %}
+
+{% block body %}
+    <h1>Create new Expediteur</h1>
+
+    {{ include('expediteur/_form.html.twig') }}
+
+    <a href="{{ path('app_expediteur_index') }}">back to list</a>
+{% endblock %}

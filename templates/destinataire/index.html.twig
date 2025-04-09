@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Destinataire index{% endblock %}
+
+{% block body %}
+    <h1>Destinataire index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom_entreprise_individu</th>
+                <th>Telephone</th>
+                <th>Email</th>
+                <th>Pays</th>
+                <th>Adresse_complete</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for destinataire in destinataires %}
+            <tr>
+                <td>{{ destinataire.id }}</td>
+                <td>{{ destinataire.nomEntrepriseIndividu }}</td>
+                <td>{{ destinataire.telephone }}</td>
+                <td>{{ destinataire.email }}</td>
+                <td>{{ destinataire.pays }}</td>
+                <td>{{ destinataire.adresseComplete }}</td>
+                <td>
+                    <a href="{{ path('app_destinataire_show', {'id': destinataire.id}) }}">show</a>
+                    <a href="{{ path('app_destinataire_edit', {'id': destinataire.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_destinataire_new') }}">Create new</a>
+{% endblock %}

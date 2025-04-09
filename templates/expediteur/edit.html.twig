@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Expediteur{% endblock %}
+
+{% block body %}
+    <h1>Edit Expediteur</h1>
+
+    {{ include('expediteur/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_expediteur_index') }}">back to list</a>
+
+    {{ include('expediteur/_delete_form.html.twig') }}
+{% endblock %}

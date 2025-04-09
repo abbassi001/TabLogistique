@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Warehouse index{% endblock %}
+
+{% block body %}
+    <h1>Warehouse index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Code_ut</th>
+                <th>Localisation_warehouse</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for warehouse in warehouses %}
+            <tr>
+                <td>{{ warehouse.id }}</td>
+                <td>{{ warehouse.codeUt }}</td>
+                <td>{{ warehouse.localisationWarehouse }}</td>
+                <td>{{ warehouse.description }}</td>
+                <td>
+                    <a href="{{ path('app_warehouse_show', {'id': warehouse.id}) }}">show</a>
+                    <a href="{{ path('app_warehouse_edit', {'id': warehouse.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_warehouse_new') }}">Create new</a>
+{% endblock %}

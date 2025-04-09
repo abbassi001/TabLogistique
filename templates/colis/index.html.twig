@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Colis index{% endblock %}
+
+{% block body %}
+    <h1>Colis index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>CodeTracking</th>
+                <th>Dimensions</th>
+                <th>Poids</th>
+                <th>Valeur_declaree</th>
+                <th>Date_creation</th>
+                <th>Nature_marchandise</th>
+                <th>Description_marchandise</th>
+                <th>Classification_douaniere</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for coli in colis %}
+            <tr>
+                <td>{{ coli.id }}</td>
+                <td>{{ coli.codeTracking }}</td>
+                <td>{{ coli.dimensions }}</td>
+                <td>{{ coli.poids }}</td>
+                <td>{{ coli.valeurDeclaree }}</td>
+                <td>{{ coli.dateCreation ? coli.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ coli.natureMarchandise }}</td>
+                <td>{{ coli.descriptionMarchandise }}</td>
+                <td>{{ coli.classificationDouaniere }}</td>
+                <td>
+                    <a href="{{ path('app_colis_show', {'id': coli.id}) }}">show</a>
+                    <a href="{{ path('app_colis_edit', {'id': coli.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_colis_new') }}">Create new</a>
+{% endblock %}

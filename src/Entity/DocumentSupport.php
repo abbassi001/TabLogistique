@@ -14,7 +14,8 @@ class DocumentSupport
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'documents')]
+
     private ?Colis $colis = null;
 
     #[ORM\Column(length: 255)]

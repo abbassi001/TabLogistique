@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Colis index{% endblock %}
 
@@ -46,4 +46,64 @@
     </table>
 
     <a href="{{ path('app_colis_new') }}">Create new</a>
+{% endblock %} #}
+
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Colis Index{% endblock %}
+
+{% block body %}
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Colis List</h1>
+            <a href="{{ path('app_colis_new') }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                Create new
+            </a>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code Tracking</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dimensions</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poids</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valeur Déclarée</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Création</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nature Marchandise</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description Marchandise</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classification Douanière</th>
+                        
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for coli in colis %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.codeTracking }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.dimensions }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.poids }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.valeurDeclaree }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.dateCreation ? coli.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.natureMarchandise }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.descriptionMarchandise }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.classificationDouaniere }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="text-blue-600 hover:text-blue-900">Show</a>
+                            <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No records found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

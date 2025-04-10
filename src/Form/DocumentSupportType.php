@@ -22,7 +22,9 @@ class DocumentSupportType extends AbstractType
             ->add('chemin_stockage')
             ->add('colis', EntityType::class, [
                 'class' => Colis::class,
-'choice_label' => 'id',
+                'choice_label' => function(Colis $colis) {
+                    return $colis->getCodeTracking() . ' - ' . $colis->getNatureMarchandise();
+                }
             ])
         ;
     }

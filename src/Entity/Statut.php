@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\StatusType;
 use App\Repository\StatutRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,34 +15,25 @@ class Statut
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $id_status = null;
-
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'statuts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Colis $colis = null;
 
+    #[ORM\Column(type: 'string', enumType: StatusType::class)]
+    private ?StatusType $type_statut = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_status = null;
+    private ?\DateTimeInterface $date_statut = null;
 
     #[ORM\Column(length: 255)]
     private ?string $localisation = null;
+    
+    #[ORM\ManyToOne]
+    private ?Employe $employe = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdStatus(): ?int
-    {
-        return $this->id_status;
-    }
-
-    public function setIdStatus(int $id_status): static
-    {
-        $this->id_status = $id_status;
-
-        return $this;
     }
 
     public function getColis(): ?Colis
@@ -56,14 +48,26 @@ class Statut
         return $this;
     }
 
-    public function getDateStatus(): ?\DateTimeInterface
+    public function getTypeStatut(): ?StatusType
     {
-        return $this->date_status;
+        return $this->type_statut;
     }
 
-    public function setDateStatus(\DateTimeInterface $date_status): static
+    public function setTypeStatut(StatusType $type_statut): static
     {
-        $this->date_status = $date_status;
+        $this->type_statut = $type_statut;
+
+        return $this;
+    }
+
+    public function getDateStatut(): ?\DateTimeInterface
+    {
+        return $this->date_statut;
+    }
+
+    public function setDateStatut(\DateTimeInterface $date_statut): static
+    {
+        $this->date_statut = $date_statut;
 
         return $this;
     }
@@ -76,6 +80,18 @@ class Statut
     public function setLocalisation(string $localisation): static
     {
         $this->localisation = $localisation;
+
+        return $this;
+    }
+    
+    public function getEmploye(): ?Employe
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(?Employe $employe): static
+    {
+        $this->employe = $employe;
 
         return $this;
     }

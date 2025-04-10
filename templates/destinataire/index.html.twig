@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Destinataire index{% endblock %}
 
@@ -40,4 +40,59 @@
     </table>
 
     <a href="{{ path('app_destinataire_new') }}">Create new</a>
+{% endblock %} #}
+
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Destinataire index{% endblock %}
+
+{% block body %}
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Destinataire index</h1>
+            <a href="{{ path('app_destinataire_new') }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                Create new
+            </a>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg overflow-hidden overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Id</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom_entreprise_individu</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telephone</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse_complete</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                {% for destinataire in destinataires %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.nomEntrepriseIndividu }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.telephone }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.email }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.pays }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ destinataire.adresseComplete }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                            <a href="{{ path('app_destinataire_show', {'id': destinataire.id}) }}" class="text-blue-600 hover:text-blue-900">Show</a>
+                            <a href="{{ path('app_destinataire_edit', {'id': destinataire.id}) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+        <a href="{{ path('app_expediteur_new') }}">Create new</a>
+
 {% endblock %}

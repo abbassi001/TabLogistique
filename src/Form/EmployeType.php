@@ -21,7 +21,9 @@ class EmployeType extends AbstractType
             ->add('niveau_acces')
             ->add('departement', EntityType::class, [
                 'class' => Departement::class,
-'choice_label' => 'id',
+                'choice_label' => function(Departement $departement) {
+                    return $departement->getNomDepartemnt();
+                }
             ])
         ;
     }

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ColisRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -38,15 +40,35 @@ class Colis
     #[ORM\Column(length: 255)]
     private ?string $classification_douaniere = null;
 
-    #[ORM\ManyToOne(inversedBy: 'destinaire')]
+    #[ORM\ManyToOne]
     private ?Expediteur $expediteur = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Destinataire $destinaire = null;
+    private ?Destinataire $destinataire = null;
 
     #[ORM\ManyToOne]
     private ?Warehouse $warehouse = null;
+    
+    #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Statut::class, orphanRemoval: true)]
+    private Collection $statuts;
+    
+    #[ORM\OneToMany(mappedBy: 'colis', targetEntity: Photo::class, orphanRemoval: true)]
+    private Collection $photos;
+    
+    #[ORM\OneToMany(mappedBy: 'colis', targetEntity: DocumentSupport::class, orphanRemoval: true)]
+    private Collection $documents;
+    
+    #[ORM\OneToMany(mappedBy: 'colis', targetEntity: ColisTransport::class, orphanRemoval: true)]
+    private Collection $colisTransports;
+
+    public function __construct()
+    {
+        $this->statuts = new ArrayCollection();
+        $this->photos = new ArrayCollection();
+        $this->documents = new ArrayCollection();
+        $this->colisTransports = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -161,14 +183,14 @@ class Colis
         return $this;
     }
 
-    public function getDestinaire(): ?Destinataire
+    public function getDestinataire(): ?Destinataire
     {
-        return $this->destinaire;
+        return $this->destinataire;
     }
 
-    public function setDestinaire(?Destinataire $destinaire): static
+    public function setDestinataire(?Destinataire $destinataire): static
     {
-        $this->destinaire = $destinaire;
+        $this->destinataire = $destinataire;
 
         return $this;
     }
@@ -181,6 +203,126 @@ class Colis
     public function setWarehouse(?Warehouse $warehouse): static
     {
         $this->warehouse = $warehouse;
+
+        return $this;
+    }
+    
+    /**
+     * @return Collection<int, Statut>
+     */
+    public function getStatuts(): Collection
+    {
+        return $this->statuts;
+    }
+
+    public function addStatut(Statut $statut): static
+    {
+        if (!$this->statuts->contains($statut)) {
+            $this->statuts->add($statut);
+            $statut->setColis($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStatut(Statut $statut): static
+    {
+        if ($this->statuts->removeElement($statut)) {
+            // set the owning side to null (unless already changed)
+            if ($statut->getColis() === $this) {
+                $statut->setColis(null);
+            }
+        }
+
+        return $this;
+    }
+    
+    /**
+     * @return Collection<int, Photo>
+     */
+    public function getPhotos(): Collection
+    {
+        return $this->photos;
+    }
+
+    public function addPhoto(Photo $photo): static
+    {
+        if (!$this->photos->contains($photo)) {
+            $this->photos->add($photo);
+            $photo->setColis($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhoto(Photo $photo): static
+    {
+        if ($this->photos->removeElement($photo)) {
+            // set the owning side to null (unless already changed)
+            if ($photo->getColis() === $this) {
+                $photo->setColis(null);
+            }
+        }
+
+        return $this;
+    }
+    
+    /**
+     * @return Collection<int, DocumentSupport>
+     */
+    public function getDocuments(): Collection
+    {
+        return $this->documents;
+    }
+
+    public function addDocument(DocumentSupport $document): static
+    {
+        if (!$this->documents->contains($document)) {
+            $this->documents->add($document);
+            $document->setColis($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocument(DocumentSupport $document): static
+    {
+        if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
+            if ($document->getColis() === $this) {
+                $document->setColis(null);
+            }
+        }
+
+        return $this;
+    }
+    
+    /**
+     * @return Collection<int, ColisTransport>
+     */
+    public function getColisTransports(): Collection
+    {
+        return $this->colisTransports;
+    }
+
+    public function addColisTransport(ColisTransport $colisTransport): static
+    {
+        if (!$this->colisTransports->contains($colisTransport)) {
+            $this->colisTransports->add($colisTransport);
+            $colisTransport->setColis($this);
+        }
+
+        return $this;
+    }
+
+    public function removeColisTransport(ColisTransport $colisTransport): static
+    {
+        if ($this->colisTransports->removeElement($colisTransport)) {
+            // set the owning side to null (unless already changed)
+            if ($colisTransport->getColis() === $this) {
+                $colisTransport->setColis(null);
+            }
+        }
 
         return $this;
     }

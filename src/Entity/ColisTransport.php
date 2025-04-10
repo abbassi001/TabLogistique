@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ColisTransportRepository::class)]
+#[ORM\UniqueConstraint(name: "colis_transport_unique", columns: ["colis_id", "transport_id"])]
 class ColisTransport
 {
     #[ORM\Id]
@@ -14,8 +15,13 @@ class ColisTransport
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'colisTransports')]
     private ?Colis $colis = null;
+    
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Transport $transport = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_association = null;
@@ -33,6 +39,18 @@ class ColisTransport
     public function setColis(?Colis $colis): static
     {
         $this->colis = $colis;
+
+        return $this;
+    }
+    
+    public function getTransport(): ?Transport
+    {
+        return $this->transport;
+    }
+
+    public function setTransport(?Transport $transport): static
+    {
+        $this->transport = $transport;
 
         return $this;
     }

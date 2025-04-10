@@ -28,15 +28,23 @@ class ColisType extends AbstractType
             ->add('classification_douaniere')
             ->add('expediteur', EntityType::class, [
                 'class' => Expediteur::class,
-'choice_label' => 'id',
+                'choice_label' => function(Expediteur $expediteur) {
+                    return $expediteur->getNomEntrepriseIndividu() . ' (' . $expediteur->getPays() . ')';
+                },
+                'required' => false
             ])
-            ->add('destinaire', EntityType::class, [
+            ->add('destinataire', EntityType::class, [
                 'class' => Destinataire::class,
-'choice_label' => 'id',
+                'choice_label' => function(Destinataire $destinataire) {
+                    return $destinataire->getNomEntrepriseIndividu() . ' (' . $destinataire->getPays() . ')';
+                }
             ])
             ->add('warehouse', EntityType::class, [
                 'class' => Warehouse::class,
-'choice_label' => 'id',
+                'choice_label' => function(Warehouse $warehouse) {
+                    return $warehouse->getCodeUt() . ' - ' . $warehouse->getLocalisationWarehouse();
+                },
+                'required' => false
             ])
         ;
     }

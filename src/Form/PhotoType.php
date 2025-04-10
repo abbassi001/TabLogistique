@@ -20,7 +20,9 @@ class PhotoType extends AbstractType
             ])
             ->add('colis', EntityType::class, [
                 'class' => Colis::class,
-'choice_label' => 'id',
+                'choice_label' => function(Colis $colis) {
+                    return $colis->getCodeTracking() . ' - ' . $colis->getNatureMarchandise();
+                }
             ])
         ;
     }

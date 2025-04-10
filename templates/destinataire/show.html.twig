@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Destinataire{% endblock %}
 
@@ -39,4 +39,63 @@
     <a href="{{ path('app_destinataire_edit', {'id': destinataire.id}) }}">edit</a>
 
     {{ include('destinataire/_delete_form.html.twig') }}
+{% endblock %} #}
+
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Destinataire{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Destinataire Details</h1>
+        </div>
+        
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <table class="min-w-full divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Id</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.id }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom_entreprise_individu</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.nomEntrepriseIndividu }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telephone</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.telephone }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.email }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ destinataire.pays }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse_complete</th>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ destinataire.adresseComplete }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex items-center space-x-4 mt-6">
+            <a href="{{ path('app_destinataire_index') }}" class="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                Back to list
+            </a>
+
+            <a href="{{ path('app_destinataire_edit', {'id': destinataire.id}) }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                Edit
+            </a>
+
+            <div class="ml-auto">
+                {{ include('destinataire/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

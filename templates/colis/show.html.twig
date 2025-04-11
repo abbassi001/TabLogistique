@@ -481,18 +481,18 @@
                 <div class="modal-body">
                     {{ form_start(document_form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">
-                            {{ form_label(document_form.nom_fichier, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(document_form.nom_fichier, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_label(document_form.nomFichier, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(document_form.nomFichier, {'attr': {'class': 'form-control'}}) }}
                             <div class="invalid-feedback">
-                                {{ form_errors(document_form.nom_fichier) }}
+                                {{ form_errors(document_form.nomFichier) }}
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            {{ form_label(document_form.type_document, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(document_form.type_document, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_label(document_form.typeDocument, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(document_form.typeDocument, {'attr': {'class': 'form-select'}}) }}
                             <div class="invalid-feedback">
-                                {{ form_errors(document_form.type_document) }}
+                                {{ form_errors(document_form.typeDocument) }}
                             </div>
                         </div>
                         

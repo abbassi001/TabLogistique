@@ -303,8 +303,8 @@
                         {% for photo in wizard_data.photos %}
                             <div class="col-md-3 mb-3">
                                 <div class="card h-100">
-                                    {% if photo.url_photo %}
-                                        <img src="{{ photo.url_photo }}" class="card-img-top" alt="Photo du colis">
+                                    {% if photo.urlPhoto %}
+                                        <img src="{{ photo.urlPhoto }}" class="card-img-top" alt="Photo du colis">
                                     {% else %}
                                         <div class="card-img-top bg-light text-center py-5">
                                             <i class="fas fa-image fa-3x text-muted"></i>
@@ -312,7 +312,7 @@
                                     {% endif %}
                                     <div class="card-body">
                                         <p class="card-text small text-muted">
-                                            Ajoutée le {{ photo.date_upload|date('d/m/Y H:i') }}
+                                            Ajoutée le {{ photo.dateUpload|date('d/m/Y H:i') }}
                                         </p>
                                     </div>
                                 </div>
@@ -360,7 +360,7 @@
                                         <td>
                                             <span class="badge bg-secondary">{{ doc.typeDocument }}</span>
                                         </td>
-                                        <td>{{ doc.date_upload|date('d/m/Y H:i') }}</td>
+                                        <td>{{ doc.dateUpload|date('d/m/Y H:i') }}</td>
                                         <td>{{ doc.cheminStockage }}</td>
                                     </tr>
                                 {% endfor %}

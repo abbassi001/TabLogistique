@@ -28,7 +28,7 @@
                                     <td>
                                         <span class="badge bg-secondary">{{ doc.typeDocument }}</span>
                                     </td>
-                                    <td>{{ doc.date_upload|date('d/m/Y H:i') }}</td>
+                                    <td>{{ doc.dateUpload|date('d/m/Y H:i') }}</td>
                                     <td>{{ doc.cheminStockage }}</td>
                                 </tr>
                             {% endfor %}
@@ -47,38 +47,44 @@
             {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            {{ form_label(form.nomFichier) }}
-                            {{ form_widget(form.nomFichier, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.nomFichier) }}
-                            <div class="form-text">Nom du fichier avec son extension.</div>
-                        </div>
+                        <!-- Using form_row() instead of manually rendering each field part -->
+                        {{ form_row(form.nomFichier, {
+                            'attr': {'class': 'form-control'},
+                            'label_attr': {'class': 'form-label'},
+                            'help': 'Nom du fichier avec son extension.'
+                        }) }}
                         
-                        <div class="mb-3">
-                            {{ form_label(form.typeDocument) }}
-                            {{ form_widget(form.typeDocument, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.typeDocument) }}
-                            <div class="form-text">Type de document (facture, bon de livraison, etc.)</div>
-                        </div>
+                        {{ form_row(form.typeDocument, {
+                            'attr': {'class': 'form-control'},
+                            'label_attr': {'class': 'form-label'},
+                            'help': 'Type de document (facture, bon de livraison, etc.)'
+                        }) }}
                     </div>
                     
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            {{ form_label(form.date_upload) }}
-                            {{ form_widget(form.date_upload, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.date_upload) }}
-                        </div>
+                        {{ form_row(form.file, {
+                            'attr': {'class': 'form-control'},
+                            'label_attr': {'class': 'form-label'},
+                            'help': 'Document à télécharger (PDF, DOC, DOCX, etc.)'
+                        }) }}
                         
-                        <div class="mb-3">
-                            {{ form_label(form.cheminStockage) }}
-                            {{ form_widget(form.cheminStockage, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.cheminStockage) }}
-                            <div class="form-text">Emplacement où le document est stocké.</div>
-                        </div>
+                        {{ form_row(form.cheminStockage, {
+                            'attr': {'class': 'form-control'},
+                            'label_attr': {'class': 'form-label'},
+                            'help': 'Emplacement où le document est stocké.'
+                        }) }}
                     </div>
                 </div>
                 
-                {{ form_row(form.colis, {'attr': {'class': 'form-select d-none'}}) }}
+                <!-- Hide the colis field if it exists -->
+                {% if form.colis is defined %}
+                    <div style="display: none;">
+                        {{ form_widget(form.colis) }}
+                    </div>
+                {% endif %}
+                
+                <!-- Include any remaining fields not explicitly rendered -->
+                {{ form_rest(form) }}
                 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-success">

@@ -24,56 +24,82 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 #[Route('/colis-wizard')]
 final class ColisWizardController extends AbstractController
 {
     private const SESSION_KEY = 'colis_wizard_data';
 
-    // Dans ColisWizardController.php, ajoutez cette méthode privée
-private function getWizardData(SessionInterface $session): array
-{
-    $wizardData = $this->getWizardData($session);
-    
-    // S'assurer que les clés essentielles existent toujours
-    if (!isset($wizardData['max_step'])) {
-        $wizardData['max_step'] = 1;
+    // Correction : La méthode getWizardData ne doit pas s'appeler elle-même
+    private function getWizardData(SessionInterface $session): array
+    {
+        // Récupérer les données de session existantes ou initialiser un tableau vide
+        $wizardData = $session->get(self::SESSION_KEY, []);
+        
+        // S'assurer que les clés essentielles existent toujours
+        if (!isset($wizardData['max_step'])) {
+            $wizardData['max_step'] = 1;
+        }
+        
+        if (!isset($wizardData['current_step'])) {
+            $wizardData['current_step'] = 1;
+        }
+        
+        if (!isset($wizardData['colis'])) {
+            $wizardData['colis'] = [];
+        }
+        
+        if (!isset($wizardData['expediteur'])) {
+            $wizardData['expediteur'] = [];
+        }
+        
+        if (!isset($wizardData['destinataire'])) {
+            $wizardData['destinataire'] = [];
+        }
+        
+        if (!isset($wizardData['transport'])) {
+            $wizardData['transport'] = [];
+        }
+        
+        if (!isset($wizardData['statut'])) {
+            $wizardData['statut'] = [];
+        }
+        
+        if (!isset($wizardData['photos'])) {
+            $wizardData['photos'] = [];
+        }
+        
+        if (!isset($wizardData['documents'])) {
+            $wizardData['documents'] = [];
+        }
+        
+        return $wizardData;
     }
     
-    if (!isset($wizardData['current_step'])) {
-        $wizardData['current_step'] = 1;
+    // Ajout de la méthode start manquante
+    #[Route('/', name: 'app_colis_wizard_start', methods: ['GET'])]
+    public function start(SessionInterface $session): Response
+    {
+        // Initialiser les données du wizard
+        $wizardData = [
+            'max_step' => 1,
+            'current_step' => 1,
+            'colis' => [],
+            'expediteur' => [],
+            'destinataire' => [],
+            'transport' => [],
+            'statut' => [],
+            'photos' => [],
+            'documents' => []
+        ];
+        
+        $session->set(self::SESSION_KEY, $wizardData);
+        
+        // Rediriger vers la première étape
+        return $this->redirectToRoute('app_colis_wizard_step1');
     }
-    
-    if (!isset($wizardData['colis'])) {
-        $wizardData['colis'] = [];
-    }
-    
-    if (!isset($wizardData['expediteur'])) {
-        $wizardData['expediteur'] = [];
-    }
-    
-    if (!isset($wizardData['destinataire'])) {
-        $wizardData['destinataire'] = [];
-    }
-    
-    if (!isset($wizardData['transport'])) {
-        $wizardData['transport'] = [];
-    }
-    
-    if (!isset($wizardData['statut'])) {
-        $wizardData['statut'] = [];
-    }
-    
-    if (!isset($wizardData['photos'])) {
-        $wizardData['photos'] = [];
-    }
-    
-    if (!isset($wizardData['documents'])) {
-        $wizardData['documents'] = [];
-    }
-    
-    return $wizardData;
-}
     
     #[Route('/step1', name: 'app_colis_wizard_step1', methods: ['GET', 'POST'])]
     public function step1(Request $request, SessionInterface $session): Response
@@ -343,7 +369,7 @@ private function getWizardData(SessionInterface $session): array
     }
     
     #[Route('/step6', name: 'app_colis_wizard_step6', methods: ['GET', 'POST'])]
-    public function step6(Request $request, SessionInterface $session): Response
+    public function step6(Request $request, SessionInterface $session, SluggerInterface $slugger): Response
     {
         // Vérifier que l'étape précédente a été complétée
         $wizardData = $this->getWizardData($session);
@@ -353,35 +379,70 @@ private function getWizardData(SessionInterface $session): array
         
         // Gestion des photos
         $photo = new Photo();
+        $photo->setDateUpload(new \DateTime());
         
         $form = $this->createForm(PhotoType::class, $photo);
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Ajouter la photo à la liste des photos
-            $wizardData['photos'][] = [
-                'urlPhoto' => $photo->getUrlPhoto(),
-                'dateUpload' => $photo->getDateUpload()->format('Y-m-d H:i:s')
-            ];
+            // Gérer l'upload de fichier
+            $photoFile = $form->get('file')->getData();
             
-            $wizardData['current_step'] = 6; // Rester sur la même étape pour ajouter d'autres photos
-            $session->set(self::SESSION_KEY, $wizardData);
-            
-            $this->addFlash('success', 'Photo ajoutée avec succès. Vous pouvez en ajouter d\'autres ou passer à l\'étape suivante.');
+            if ($photoFile) {
+                $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
+                
+                try {
+                    $photoFile->move(
+                        $this->getParameter('photos_directory'),
+                        $newFilename
+                    );
+                    
+                    $photo->setUrlPhoto($newFilename);
+                    
+                    // Ajouter la photo à la liste des photos
+                    $wizardData['photos'][] = [
+                        'urlPhoto' => $newFilename,
+                        'dateUpload' => $photo->getDateUpload()->format('Y-m-d H:i:s'),
+                        'description' => $photo->getDescription()
+                    ];
+                    
+                    $wizardData['current_step'] = 6; // Rester sur la même étape pour ajouter d'autres photos
+                    $session->set(self::SESSION_KEY, $wizardData);
+                    
+                    $this->addFlash('success', 'Photo ajoutée avec succès. Vous pouvez en ajouter d\'autres ou passer à l\'étape suivante.');
+                    
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors du téléchargement de la photo: ' . $e->getMessage());
+                }
+            } else {
+                // Si pas de fichier, mais une URL de photo
+                $wizardData['photos'][] = [
+                    'urlPhoto' => $photo->getUrlPhoto(),
+                    'dateUpload' => $photo->getDateUpload()->format('Y-m-d H:i:s'),
+                    'description' => $photo->getDescription()
+                ];
+                
+                $wizardData['current_step'] = 6;
+                $session->set(self::SESSION_KEY, $wizardData);
+                
+                $this->addFlash('success', 'Référence photo ajoutée avec succès.');
+            }
             
             return $this->redirectToRoute('app_colis_wizard_step6');
         }
         
         return $this->render('colis_wizard/step6.html.twig', [
             'form' => $form,
-            'photos' => $wizardData['photos'],
+            'photos' => $wizardData['photos'] ?? [],
             'current_step' => 6,
             'max_step' => $wizardData['max_step'] >= 6 ? $wizardData['max_step'] : 6
         ]);
     }
     
     #[Route('/step7', name: 'app_colis_wizard_step7', methods: ['GET', 'POST'])]
-    public function step7(Request $request, SessionInterface $session): Response
+    public function step7(Request $request, SessionInterface $session, SluggerInterface $slugger): Response
     {
         // Aucune vérification pour permettre de sauter l'étape des photos si non nécessaire
         $wizardData = $this->getWizardData($session);
@@ -394,29 +455,67 @@ private function getWizardData(SessionInterface $session): array
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Ajouter le document à la liste
-            $wizardData['documents'][] = [
-                'nomFichier' => $document->getNomFichier(),
-                'typeDocument' => $document->getTypeDocument(),
-                'dateUpload' => $document->getDateUpload()->format('Y-m-d H:i:s'),
-                'cheminStockage' => $document->getCheminStockage()
-            ];
+            // Gérer l'upload de fichier
+            $docFile = $form->get('file')->getData();
             
-            $wizardData['current_step'] = 7; // Rester sur la même étape pour ajouter d'autres documents
-            if ($wizardData['max_step'] < 7) {
-                $wizardData['max_step'] = 7;
+            if ($docFile) {
+                $originalFilename = pathinfo($docFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$docFile->guessExtension();
+                
+                try {
+                    $docFile->move(
+                        $this->getParameter('documents_directory'),
+                        $newFilename
+                    );
+                    
+                    $document->setCheminStockage($newFilename);
+                    
+                    // Ajouter le document à la liste
+                    $wizardData['documents'][] = [
+                        'nomFichier' => $document->getNomFichier(),
+                        'typeDocument' => $document->getTypeDocument(),
+                        'dateUpload' => $document->getDateUpload()->format('Y-m-d H:i:s'),
+                        'cheminStockage' => $newFilename
+                    ];
+                    
+                    $wizardData['current_step'] = 7; // Rester sur la même étape pour ajouter d'autres documents
+                    if ($wizardData['max_step'] < 7) {
+                        $wizardData['max_step'] = 7;
+                    }
+                    
+                    $session->set(self::SESSION_KEY, $wizardData);
+                    
+                    $this->addFlash('success', 'Document ajouté avec succès. Vous pouvez en ajouter d\'autres ou passer à l\'étape suivante.');
+                    
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Une erreur est survenue lors du téléchargement du document: ' . $e->getMessage());
+                }
+            } else {
+                // Si pas de fichier, mais des informations de document
+                $wizardData['documents'][] = [
+                    'nomFichier' => $document->getNomFichier(),
+                    'typeDocument' => $document->getTypeDocument(),
+                    'dateUpload' => $document->getDateUpload()->format('Y-m-d H:i:s'),
+                    'cheminStockage' => $document->getCheminStockage()
+                ];
+                
+                $wizardData['current_step'] = 7;
+                if ($wizardData['max_step'] < 7) {
+                    $wizardData['max_step'] = 7;
+                }
+                
+                $session->set(self::SESSION_KEY, $wizardData);
+                
+                $this->addFlash('success', 'Document ajouté avec succès.');
             }
-            
-            $session->set(self::SESSION_KEY, $wizardData);
-            
-            $this->addFlash('success', 'Document ajouté avec succès. Vous pouvez en ajouter d\'autres ou passer à l\'étape suivante.');
             
             return $this->redirectToRoute('app_colis_wizard_step7');
         }
         
         return $this->render('colis_wizard/step7.html.twig', [
             'form' => $form,
-            'documents' => $wizardData['documents'],
+            'documents' => $wizardData['documents'] ?? [],
             'current_step' => 7,
             'max_step' => $wizardData['max_step'] >= 7 ? $wizardData['max_step'] : 7
         ]);
@@ -431,6 +530,12 @@ private function getWizardData(SessionInterface $session): array
         if (empty($wizardData['colis']) || empty($wizardData['destinataire'])) {
             return $this->redirectToRoute('app_colis_wizard_start');
         }
+        
+        $wizardData['current_step'] = 8;
+        if ($wizardData['max_step'] < 8) {
+            $wizardData['max_step'] = 8;
+        }
+        $session->set(self::SESSION_KEY, $wizardData);
         
         return $this->render('colis_wizard/review.html.twig', [
             'wizard_data' => $wizardData,
@@ -529,6 +634,9 @@ private function getWizardData(SessionInterface $session): array
                     $photo = new Photo();
                     $photo->setUrlPhoto($photoData['urlPhoto']);
                     $photo->setDateUpload(new \DateTime($photoData['dateUpload']));
+                    if (isset($photoData['description'])) {
+                        $photo->setDescription($photoData['description']);
+                    }
                     $photo->setColis($colis);
                     
                     $entityManager->persist($photo);

@@ -10,6 +10,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -21,11 +23,8 @@ class PhotoType extends AbstractType
             ->add('file', FileType::class, [
                 'label' => 'Image (JPG, PNG)',
                 'mapped' => false,
-                'required' => true,
+                'required' => false,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez sélectionner une image',
-                    ]),
                     new File([
                         'maxSize' => '5M',
                         'mimeTypes' => [
@@ -36,9 +35,17 @@ class PhotoType extends AbstractType
                     ])
                 ],
             ])
-            ->add('description', null, [
+            ->add('urlPhoto', TextType::class, [
+                'label' => 'URL de l\'image (si pas d\'upload)',
                 'required' => false,
-                'attr' => ['placeholder' => 'Description de la photo (optionnel)']
+                'attr' => ['placeholder' => 'URL de l\'image']
+            ])
+            ->add('description', TextareaType::class, [
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Description de la photo (optionnel)',
+                    'rows' => 3
+                ]
             ]);
             
         // Si le colis est déjà associé (venant de la page détail du colis)
@@ -52,7 +59,8 @@ class PhotoType extends AbstractType
                 'class' => Colis::class,
                 'choice_label' => function(Colis $colis) {
                     return $colis->getCodeTracking() . ' - ' . $colis->getNatureMarchandise();
-                }
+                },
+                'required' => false
             ]);
         }
     }

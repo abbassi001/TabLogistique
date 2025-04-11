@@ -10,6 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -19,11 +20,11 @@ class DocumentSupportType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('nom_fichier', null, [
+            ->add('nomFichier', TextType::class, [
                 'label' => 'Nom du document',
                 'attr' => ['placeholder' => 'Nom du document']
             ])
-            ->add('type_document', ChoiceType::class, [
+            ->add('typeDocument', ChoiceType::class, [
                 'choices' => [
                     'Déclaration douane' => 'Déclaration douane',
                     'AWB' => 'AWB',
@@ -36,11 +37,8 @@ class DocumentSupportType extends AbstractType
             ->add('file', FileType::class, [
                 'label' => 'Document (PDF, DOC, DOCX, XLS, XLSX)',
                 'mapped' => false,
-                'required' => true,
+                'required' => false,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Veuillez sélectionner un document',
-                    ]),
                     new File([
                         'maxSize' => '10M',
                         'mimeTypes' => [
@@ -53,6 +51,11 @@ class DocumentSupportType extends AbstractType
                         'mimeTypesMessage' => 'Veuillez télécharger un document valide (PDF, DOC, DOCX, XLS, XLSX)',
                     ])
                 ],
+            ])
+            ->add('cheminStockage', TextType::class, [
+                'label' => 'Chemin de stockage (si pas d\'upload)',
+                'required' => false,
+                'attr' => ['placeholder' => 'Chemin ou référence de stockage']
             ]);
             
         // Si le colis est déjà associé (venant de la page détail du colis)
@@ -66,7 +69,8 @@ class DocumentSupportType extends AbstractType
                 'class' => Colis::class,
                 'choice_label' => function(Colis $colis) {
                     return $colis->getCodeTracking() . ' - ' . $colis->getNatureMarchandise();
-                }
+                },
+                'required' => false
             ]);
         }
     }

@@ -1,0 +1,394 @@
+{% extends 'colis_wizard/layout.html.twig' %}
+
+{% block step_title %}Vérification finale{% endblock %}
+
+{% block step_content %}
+    <p class="text-muted mb-4">
+        Veuillez vérifier toutes les informations saisies avant de finaliser la création du colis. Si vous souhaitez modifier une section, cliquez sur le bouton d'édition correspondant.
+    </p>
+    
+    <div class="accordion" id="reviewAccordion">
+        <!-- Informations du colis -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingColis">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColis" aria-expanded="true" aria-controls="collapseColis">
+                    <i class="fas fa-box me-2"></i>Informations du colis
+                </button>
+            </h2>
+            <div id="collapseColis" class="accordion-collapse collapse show" aria-labelledby="headingColis">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step1') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Code de suivi</th>
+                                    <td>{{ wizard_data.colis.codeTracking }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Dimensions</th>
+                                    <td>{{ wizard_data.colis.dimensions }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Poids</th>
+                                    <td>{{ wizard_data.colis.poids }} kg</td>
+                                </tr>
+                                <tr>
+                                    <th>Valeur déclarée</th>
+                                    <td>{{ wizard_data.colis.valeur_declaree }} €</td>
+                                </tr>
+                                <tr>
+                                    <th>Date de création</th>
+                                    <td>{{ wizard_data.colis.date_creation|date('d/m/Y H:i') }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Nature de la marchandise</th>
+                                    <td>{{ wizard_data.colis.nature_marchandise }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Description</th>
+                                    <td>{{ wizard_data.colis.description_marchandise }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Classification douanière</th>
+                                    <td>{{ wizard_data.colis.classification_douaniere }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informations de l'expéditeur -->
+        {% if wizard_data.expediteur is defined and wizard_data.expediteur|length > 0 %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingExpediteur">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExpediteur" aria-expanded="false" aria-controls="collapseExpediteur">
+                    <i class="fas fa-paper-plane me-2"></i>Informations de l'expéditeur
+                </button>
+            </h2>
+            <div id="collapseExpediteur" class="accordion-collapse collapse" aria-labelledby="headingExpediteur">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step2') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Nom</th>
+                                    <td>{{ wizard_data.expediteur.nom_entreprise_individu }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ wizard_data.expediteur.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Téléphone</th>
+                                    <td>{{ wizard_data.expediteur.telephone }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Pays</th>
+                                    <td>{{ wizard_data.expediteur.pays }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Adresse complète</th>
+                                    <td>{{ wizard_data.expediteur.adresse_complete }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Informations du destinataire -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingDestinataire">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDestinataire" aria-expanded="false" aria-controls="collapseDestinataire">
+                    <i class="fas fa-map-marker-alt me-2"></i>Informations du destinataire
+                </button>
+            </h2>
+            <div id="collapseDestinataire" class="accordion-collapse collapse" aria-labelledby="headingDestinataire">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step3') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Nom</th>
+                                    <td>{{ wizard_data.destinataire.nom_entreprise_individu }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td>{{ wizard_data.destinataire.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Téléphone</th>
+                                    <td>{{ wizard_data.destinataire.telephone }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Pays</th>
+                                    <td>{{ wizard_data.destinataire.pays }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Adresse complète</th>
+                                    <td>{{ wizard_data.destinataire.adresse_complete }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statut initial -->
+        {% if wizard_data.statut is defined and wizard_data.statut|length > 0 %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingStatut">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStatut" aria-expanded="false" aria-controls="collapseStatut">
+                    <i class="fas fa-clipboard-check me-2"></i>Statut initial
+                </button>
+            </h2>
+            <div id="collapseStatut" class="accordion-collapse collapse" aria-labelledby="headingStatut">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step4') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <table class="table table-sm">
+                        <tr>
+                            <th>Type de statut</th>
+                            <td>
+                                {% if wizard_data.statut.type_statut == 'en_attente' %}
+                                    <span class="badge bg-warning">En attente</span>
+                                {% elseif wizard_data.statut.type_statut == 'recu' %}
+                                    <span class="badge bg-success">Reçu</span>
+                                {% elseif wizard_data.statut.type_statut == 'en_transit' %}
+                                    <span class="badge bg-info">En transit</span>
+                                {% elseif wizard_data.statut.type_statut == 'en_livraison' %}
+                                    <span class="badge bg-primary">En livraison</span>
+                                {% elseif wizard_data.statut.type_statut == 'livre' %}
+                                    <span class="badge bg-success">Livré</span>
+                                {% elseif wizard_data.statut.type_statut == 'retourne' %}
+                                    <span class="badge bg-danger">Retourné</span>
+                                {% elseif wizard_data.statut.type_statut == 'bloque_douane' %}
+                                    <span class="badge bg-warning">Bloqué en douane</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Date du statut</th>
+                            <td>{{ wizard_data.statut.date_statut|date('d/m/Y H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Localisation</th>
+                            <td>{{ wizard_data.statut.localisation }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Informations de transport -->
+        {% if wizard_data.transport is defined and wizard_data.transport|length > 0 %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTransport">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTransport" aria-expanded="false" aria-controls="collapseTransport">
+                    <i class="fas fa-truck me-2"></i>Informations de transport
+                </button>
+            </h2>
+            <div id="collapseTransport" class="accordion-collapse collapse" aria-labelledby="headingTransport">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step5') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Type de transport</th>
+                                    <td>{{ wizard_data.transport.type_transport }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Compagnie</th>
+                                    <td>{{ wizard_data.transport.compagnie_transport }}</td>
+                                </tr>
+                                <tr>
+                                    <th>N° Vol/Navire</th>
+                                    <td>{{ wizard_data.transport.numero_vol_navire }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Départ</th>
+                                    <td>
+                                        {{ wizard_data.transport.lieu_depart }}
+                                        {% if wizard_data.transport.date_depart is defined and wizard_data.transport.date_depart %}
+                                            <small class="text-muted d-block">
+                                                {{ wizard_data.transport.date_depart|date('d/m/Y H:i') }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Arrivée</th>
+                                    <td>
+                                        {{ wizard_data.transport.lieu_arrivee }}
+                                        <small class="text-muted d-block">
+                                            {{ wizard_data.transport.date_arrivee|date('d/m/Y H:i') }}
+                                        </small>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Photos -->
+        {% if wizard_data.photos is defined and wizard_data.photos|length > 0 %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingPhotos">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePhotos" aria-expanded="false" aria-controls="collapsePhotos">
+                    <i class="fas fa-camera me-2"></i>Photos ({{ wizard_data.photos|length }})
+                </button>
+            </h2>
+            <div id="collapsePhotos" class="accordion-collapse collapse" aria-labelledby="headingPhotos">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step6') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <div class="row">
+                        {% for photo in wizard_data.photos %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100">
+                                    {% if photo.url_photo %}
+                                        <img src="{{ photo.url_photo }}" class="card-img-top" alt="Photo du colis">
+                                    {% else %}
+                                        <div class="card-img-top bg-light text-center py-5">
+                                            <i class="fas fa-image fa-3x text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <p class="card-text small text-muted">
+                                            Ajoutée le {{ photo.date_upload|date('d/m/Y H:i') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Documents -->
+        {% if wizard_data.documents is defined and wizard_data.documents|length > 0 %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingDocuments">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="false" aria-controls="collapseDocuments">
+                    <i class="fas fa-file-alt me-2"></i>Documents ({{ wizard_data.documents|length }})
+                </button>
+            </h2>
+            <div id="collapseDocuments" class="accordion-collapse collapse" aria-labelledby="headingDocuments">
+                <div class="accordion-body">
+                    <div class="d-flex justify-content-end mb-2">
+                        <a href="{{ path('app_colis_wizard_step7') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-pen me-1"></i>Modifier
+                        </a>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nom du fichier</th>
+                                    <th>Type</th>
+                                    <th>Date d'ajout</th>
+                                    <th>Emplacement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for doc in wizard_data.documents %}
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-file-alt me-2 text-primary"></i>
+                                            {{ doc.nomFichier }}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ doc.typeDocument }}</span>
+                                        </td>
+                                        <td>{{ doc.date_upload|date('d/m/Y H:i') }}</td>
+                                        <td>{{ doc.cheminStockage }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="alert alert-info mt-4">
+        <i class="fas fa-info-circle me-2"></i>
+        Veuillez vérifier toutes les informations avant de finaliser la création du colis. Une fois enregistré, le colis sera immédiatement intégré au système de suivi.
+    </div>
+{% endblock %}
+
+{% block navigation_buttons %}
+    <a href="{{ path('app_colis_wizard_step7') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Précédent
+    </a>
+    
+    <a href="{{ path('app_colis_wizard_cancel') }}" class="btn btn-outline-danger">
+        <i class="fas fa-trash me-2"></i>Annuler la création
+    </a>
+    
+    <a href="{{ path('app_colis_wizard_save') }}" class="btn btn-success btn-lg">
+        <i class="fas fa-save me-2"></i>Finaliser et enregistrer
+    </a>
+{% endblock %}

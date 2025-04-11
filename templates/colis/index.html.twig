@@ -1,55 +1,3 @@
-{# {% extends 'base.html.twig' %}
-
-{% block title %}Colis index{% endblock %}
-
-{% block body %}
-    <h1>Colis index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>CodeTracking</th>
-                <th>Dimensions</th>
-                <th>Poids</th>
-                <th>Valeur_declaree</th>
-                <th>Date_creation</th>
-                <th>Nature_marchandise</th>
-                <th>Description_marchandise</th>
-                <th>Classification_douaniere</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for coli in colis %}
-            <tr>
-                <td>{{ coli.id }}</td>
-                <td>{{ coli.codeTracking }}</td>
-                <td>{{ coli.dimensions }}</td>
-                <td>{{ coli.poids }}</td>
-                <td>{{ coli.valeurDeclaree }}</td>
-                <td>{{ coli.dateCreation ? coli.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ coli.natureMarchandise }}</td>
-                <td>{{ coli.descriptionMarchandise }}</td>
-                <td>{{ coli.classificationDouaniere }}</td>
-                <td>
-                    <a href="{{ path('app_colis_show', {'id': coli.id}) }}">show</a>
-                    <a href="{{ path('app_colis_edit', {'id': coli.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="10">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_colis_new') }}">Create new</a>
-{% endblock %} #}
-
-
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Colis Index{% endblock %}
@@ -58,10 +6,25 @@
     <div class="max-w-6xl mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Colis List</h1>
-            <a href="{{ path('app_colis_new') }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                Create new
-            </a>
+            <div class="flex space-x-3">
+                <a href="{{ path('app_colis_new') }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                    <i class="fas fa-plus me-2"></i>Create new
+                </a>
+                <a href="{{ path('app_colis_wizard_start') }}" class="px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                    <i class="fas fa-magic me-2"></i>Assistant de création
+                </a>
+            </div>
         </div>
+
+        <!-- Messages flash -->
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
 
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
@@ -71,12 +34,9 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code Tracking</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dimensions</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Poids</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valeur Déclarée</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Création</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nature Marchandise</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description Marchandise</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classification Douanière</th>
-                        
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destinataire</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -86,20 +46,49 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.codeTracking }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.dimensions }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.poids }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.valeurDeclaree }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.dateCreation ? coli.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.poids }} kg</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.natureMarchandise }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.descriptionMarchandise }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ coli.classificationDouaniere }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {% if coli.destinataire %}
+                                {{ coli.destinataire.nomEntrepriseIndividu }}
+                            {% else %}
+                                <span class="text-gray-400">Non défini</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if coli.statuts.last %}
+                                {% set statut = coli.statuts.last %}
+                                {% if statut.typeStatut.value == 'en_attente' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">En attente</span>
+                                {% elseif statut.typeStatut.value == 'recu' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Reçu</span>
+                                {% elseif statut.typeStatut.value == 'en_transit' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">En transit</span>
+                                {% elseif statut.typeStatut.value == 'en_livraison' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">En livraison</span>
+                                {% elseif statut.typeStatut.value == 'livre' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Livré</span>
+                                {% elseif statut.typeStatut.value == 'retourne' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Retourné</span>
+                                {% elseif statut.typeStatut.value == 'bloque_douane' %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">Bloqué en douane</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Non défini</span>
+                            {% endif %}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="text-blue-600 hover:text-blue-900">Show</a>
-                            <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                            <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="text-blue-600 hover:text-blue-900">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="text-indigo-600 hover:text-indigo-900">
+                                <i class="fas fa-edit"></i>
+                            </a>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No records found</td>
+                        <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">Aucun colis trouvé</td>
                     </tr>
                     {% endfor %}
                 </tbody>

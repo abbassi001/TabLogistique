@@ -23,6 +23,9 @@ class Photo
     #[ORM\ManyToOne(inversedBy: 'photos')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Colis $colis = null;
+    
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     public function getId(): ?int
     {
@@ -37,7 +40,6 @@ class Photo
     public function setUrlPhoto(?string $url_photo): static
     {
         $this->url_photo = $url_photo;
-
         return $this;
     }
 
@@ -49,7 +51,6 @@ class Photo
     public function setDateUpload(\DateTimeInterface $date_upload): static
     {
         $this->date_upload = $date_upload;
-
         return $this;
     }
 
@@ -61,8 +62,17 @@ class Photo
     public function setColis(?Colis $colis): static
     {
         $this->colis = $colis;
-
         return $this;
     }
+    
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+        return $this;
+    }
 }

@@ -1,0 +1,86 @@
+{% extends 'colis_wizard/layout.html.twig' %}
+
+{% block step_title %}Étape 6 : Ajouter des photos{% endblock %}
+
+{% block step_content %}
+    <p class="text-muted mb-4">
+        Ajoutez des photos du colis pour faciliter son identification. Vous pouvez ajouter plusieurs photos avant de passer à l'étape suivante.
+    </p>
+    
+    {% if photos is defined and photos|length > 0 %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5 class="border-bottom pb-2 mb-3">Photos déjà ajoutées ({{ photos|length }})</h5>
+                <div class="row">
+                    {% for photo in photos %}
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                {% if photo.url_photo %}
+                                    <img src="{{ photo.url_photo }}" class="card-img-top" alt="Photo du colis">
+                                {% else %}
+                                    <div class="card-img-top bg-light text-center py-5">
+                                        <i class="fas fa-image fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <p class="card-text small text-muted">
+                                        Ajoutée le {{ photo.date_upload|date('d/m/Y H:i') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    
+    <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Ajouter une nouvelle photo</h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            {{ form_label(form.url_photo) }}
+                            {{ form_widget(form.url_photo, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.url_photo) }}
+                            <div class="form-text">URL de l'image ou chemin du fichier.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            {{ form_label(form.date_upload) }}
+                            {{ form_widget(form.date_upload, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.date_upload) }}
+                        </div>
+                    </div>
+                </div>
+                {{ form_row(form.colis, {'attr': {'class': 'form-select d-none'}}) }}
+                
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-2"></i>Ajouter cette photo
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block navigation_buttons %}
+    <a href="{{ path('app_colis_wizard_step5') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Précédent
+    </a>
+    
+    <a href="{{ path('app_colis_wizard_cancel') }}" class="btn btn-outline-danger">
+        <i class="fas fa-trash me-2"></i>Annuler la création
+    </a>
+    
+    <a href="{{ path('app_colis_wizard_step7') }}" class="btn btn-primary">
+        Suivant<i class="fas fa-arrow-right ms-2"></i>
+    </a>
+{% endblock %}

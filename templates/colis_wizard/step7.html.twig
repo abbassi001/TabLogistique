@@ -1,0 +1,105 @@
+{% extends 'colis_wizard/layout.html.twig' %}
+
+{% block step_title %}Étape 7 : Ajouter des documents{% endblock %}
+
+{% block step_content %}
+    <p class="text-muted mb-4">
+        Ajoutez des documents associés au colis (factures, bons de livraison, documents douaniers, etc.). Vous pouvez ajouter plusieurs documents avant de passer à l'étape suivante.
+    </p>
+    
+    {% if documents is defined and documents|length > 0 %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5 class="border-bottom pb-2 mb-3">Documents déjà ajoutés ({{ documents|length }})</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nom du fichier</th>
+                                <th>Type</th>
+                                <th>Date d'ajout</th>
+                                <th>Emplacement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in documents %}
+                                <tr>
+                                    <td>{{ doc.nomFichier }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ doc.typeDocument }}</span>
+                                    </td>
+                                    <td>{{ doc.date_upload|date('d/m/Y H:i') }}</td>
+                                    <td>{{ doc.cheminStockage }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Ajouter un nouveau document</h5>
+        </div>
+        <div class="card-body">
+            {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.nomFichier) }}
+                            {{ form_widget(form.nomFichier, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.nomFichier) }}
+                            <div class="form-text">Nom du fichier avec son extension.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.typeDocument) }}
+                            {{ form_widget(form.typeDocument, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.typeDocument) }}
+                            <div class="form-text">Type de document (facture, bon de livraison, etc.)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form_label(form.date_upload) }}
+                            {{ form_widget(form.date_upload, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.date_upload) }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(form.cheminStockage) }}
+                            {{ form_widget(form.cheminStockage, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.cheminStockage) }}
+                            <div class="form-text">Emplacement où le document est stocké.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {{ form_row(form.colis, {'attr': {'class': 'form-select d-none'}}) }}
+                
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus-circle me-2"></i>Ajouter ce document
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block navigation_buttons %}
+    <a href="{{ path('app_colis_wizard_step6') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Précédent
+    </a>
+    
+    <a href="{{ path('app_colis_wizard_cancel') }}" class="btn btn-outline-danger">
+        <i class="fas fa-trash me-2"></i>Annuler la création
+    </a>
+    
+    <a href="{{ path('app_colis_wizard_review') }}" class="btn btn-primary">
+        Vérification finale<i class="fas fa-arrow-right ms-2"></i>
+    </a>
+{% endblock %}

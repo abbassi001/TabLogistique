@@ -1,0 +1,76 @@
+{% extends 'colis_wizard/layout.html.twig' %}
+
+{% block step_title %}Étape 1 : Informations du colis{% endblock %}
+
+{% block step_content %}
+    <p class="text-muted mb-4">
+        Veuillez saisir les informations de base concernant votre colis. Les champs marqués d'un * sont obligatoires.
+    </p>
+
+    {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5 class="border-bottom pb-2 mb-3">Caractéristiques principales</h5>
+                
+                <div class="mb-3">
+                    {{ form_label(form.codeTracking) }}
+                    {{ form_widget(form.codeTracking) }}
+                    {{ form_errors(form.codeTracking) }}
+                    <div class="form-text">Utilisé pour suivre votre colis tout au long du transport.</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.dimensions) }}
+                    {{ form_widget(form.dimensions) }}
+                    {{ form_errors(form.dimensions) }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.poids) }}
+                    {{ form_widget(form.poids) }}
+                    {{ form_errors(form.poids) }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.valeur_declaree) }}
+                    {{ form_widget(form.valeur_declaree) }}
+                    {{ form_errors(form.valeur_declaree) }}
+                    <div class="form-text">Important pour l'assurance et la déclaration en douane.</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.date_creation) }}
+                    {{ form_widget(form.date_creation) }}
+                    {{ form_errors(form.date_creation) }}
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <h5 class="border-bottom pb-2 mb-3">Contenu du colis</h5>
+                
+                <div class="mb-3">
+                    {{ form_label(form.nature_marchandise) }}
+                    {{ form_widget(form.nature_marchandise) }}
+                    {{ form_errors(form.nature_marchandise) }}
+                    <div class="form-text">Catégorie générale du contenu (ex: électronique, vêtements, etc.)</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.description_marchandise) }}
+                    {{ form_widget(form.description_marchandise) }}
+                    {{ form_errors(form.description_marchandise) }}
+                    <div class="form-text">Description détaillée du contenu (facultatif).</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.classification_douaniere) }}
+                    {{ form_widget(form.classification_douaniere) }}
+                    {{ form_errors(form.classification_douaniere) }}
+                    <div class="form-text">Code harmonisé utilisé pour la déclaration en douane.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Le bouton de soumission est dans le layout parent -->
+    {{ form_end(form) }}
+{% endblock %}

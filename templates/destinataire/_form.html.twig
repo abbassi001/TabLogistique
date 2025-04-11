@@ -1,60 +1,7 @@
-{# {{ form_start(form) }}
+ {{ form_start(form) }}
     {{ form_widget(form) }}
     <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }} #}
+{{ form_end(form) }} 
 
 
-{% extends 'base.html.twig' %}
 
-{% block title %}New Destinataire{% endblock %}
-
-{% block body %}
-    <div class="max-w-4xl mx-auto px-4 py-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Create new Destinataire</h1>
-        </div>
-        
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            {{ form_start(form, {'attr': {'class': 'space-y-6 max-w-lg'}}) }}
-                {% for field in form %}
-                    {% if not field.vars.name == '_token' %}
-                        <div class="mb-4">
-                            {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                            
-                            {% if field.vars.name == 'date_creation' %}
-                                {{ form_widget(field, {
-                                    'attr': {
-                                        'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
-                                        'type': 'date'
-                                    }
-                                }) }}
-                            {% elseif field.vars.block_prefixes[1] == 'entity' %}
-                                {{ form_widget(field, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'}}) }}
-                            {% else %}
-                                {{ form_widget(field, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'}}) }}
-                            {% endif %}
-                            
-                            {% if field.vars.errors|length > 0 %}
-                                <div class="text-red-500 text-xs mt-1">
-                                    {{ form_errors(field) }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                
-                <div class="pt-4">
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
-                        {{ button_label|default('Save') }}
-                    </button>
-                </div>
-            {{ form_end(form) }}
-        </div>
-        
-        <div class="mt-6">
-            <a href="{{ path('app_destinataire_index') }}" class="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
-                Back to list
-            </a>
-        </div>
-    </div>
-{% endblock %}

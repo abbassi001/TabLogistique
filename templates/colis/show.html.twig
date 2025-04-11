@@ -34,6 +34,16 @@
 {% block main_class %}col-md-10{% endblock %}
 
 {% block body %}
+    <!-- Messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     <div class="container-fluid mx-auto px-4 py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="text-3xl font-bold text-gray-800"><i class="fas fa-box me-2"></i>Détails du Colis</h1>
@@ -159,7 +169,7 @@
             <div class="row">
                 <!-- Photos Button -->
                 <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm text-center p-3 bg-white">
+                    <div class="card shadow-sm text-center p-3 bg-white cursor-pointer" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#photoModal">
                         <div class="d-flex justify-content-center mb-2">
                             <span class="rounded-circle p-3 bg-light">
                                 <i class="fas fa-camera text-primary fa-2x"></i>
@@ -171,7 +181,7 @@
                 
                 <!-- Documents Button -->
                 <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm text-center p-3 bg-white">
+                    <div class="card shadow-sm text-center p-3 bg-white cursor-pointer" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#documentModal">
                         <div class="d-flex justify-content-center mb-2">
                             <span class="rounded-circle p-3 bg-light">
                                 <i class="fas fa-file-alt text-success fa-2x"></i>
@@ -183,7 +193,7 @@
                 
                 <!-- Transport Button -->
                 <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm text-center p-3 bg-white">
+                    <div class="card shadow-sm text-center p-3 bg-white cursor-pointer" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#transportModal">
                         <div class="d-flex justify-content-center mb-2">
                             <span class="rounded-circle p-3 bg-light">
                                 <i class="fas fa-truck text-warning fa-2x"></i>
@@ -195,7 +205,7 @@
                 
                 <!-- Status Update Button -->
                 <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="card shadow-sm text-center p-3 bg-white">
+                    <div class="card shadow-sm text-center p-3 bg-white cursor-pointer" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#statutModal">
                         <div class="d-flex justify-content-center mb-2">
                             <span class="rounded-circle p-3 bg-light">
                                 <i class="fas fa-clipboard-list text-danger fa-2x"></i>
@@ -270,6 +280,11 @@
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>Aucun statut enregistré pour ce colis
                             </div>
+                            <div class="text-center py-3">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#statutModal">
+                                    <i class="fas fa-plus-circle me-1"></i> Ajouter un statut
+                                </button>
+                            </div>
                         {% endif %}
                     </div>
                     <div class="tab-pane fade" id="transports" role="tabpanel" aria-labelledby="transports-tab">
@@ -310,18 +325,36 @@
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>Aucun transport associé à ce colis
                             </div>
+                            <div class="text-center py-3">
+                                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#transportModal">
+                                    <i class="fas fa-plus-circle me-1"></i> Ajouter un transport
+                                </button>
+                            </div>
                         {% endif %}
                     </div>
                     <div class="tab-pane fade" id="photos" role="tabpanel" aria-labelledby="photos-tab">
                         {% if coli.photos is defined and coli.photos|length > 0 %}
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="row row-cols-1 row-cols-md-3 g-4">
                                 {% for photo in coli.photos %}
-                                    <div class="card shadow-sm overflow-hidden">
-                                        <img src="{{ photo.urlPhoto }}" class="card-img-top img-fluid" alt="Photo">
-                                        <div class="card-body">
-                                            <p class="card-text text-muted">
-                                                <small>Ajoutée le {{ photo.dateUpload ? photo.dateUpload|date('d/m/Y H:i') : '' }}</small>
-                                            </p>
+                                    <div class="col">
+                                        <div class="card shadow-sm h-100">
+                                            <img src="{{ asset('uploads/photos/' ~ photo.urlPhoto) }}" class="card-img-top img-fluid" alt="Photo du colis" style="height: 200px; object-fit: cover;">
+                                            <div class="card-body">
+                                                {% if photo.description %}
+                                                    <p class="card-text">{{ photo.description }}</p>
+                                                {% endif %}
+                                                <p class="card-text text-muted">
+                                                    <small>Ajoutée le {{ photo.dateUpload ? photo.dateUpload|date('d/m/Y H:i') : '' }}</small>
+                                                </p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-top-0">
+                                                <a href="{{ asset('uploads/photos/' ~ photo.urlPhoto) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                    <i class="fas fa-search-plus me-1"></i> Agrandir
+                                                </a>
+                                                <button class="btn btn-sm btn-outline-danger ms-1" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cette photo ?')) { /* Ajouter l'appel AJAX pour supprimer */ }">
+                                                    <i class="fas fa-trash me-1"></i> Supprimer
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 {% endfor %}
@@ -329,6 +362,11 @@
                         {% else %}
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>Aucune photo pour ce colis
+                            </div>
+                            <div class="text-center py-3">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#photoModal">
+                                    <i class="fas fa-plus-circle me-1"></i> Ajouter une photo
+                                </button>
                             </div>
                         {% endif %}
                     </div>
@@ -351,9 +389,12 @@
                                                 <td class="px-3 py-2"><span class="badge bg-secondary">{{ document.typeDocument }}</span></td>
                                                 <td class="px-3 py-2">{{ document.dateUpload ? document.dateUpload|date('d/m/Y H:i') : '' }}</td>
                                                 <td class="px-3 py-2">
-                                                    <a href="#" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-download me-1"></i>Télécharger
+                                                    <a href="{{ asset('uploads/documents/' ~ document.cheminStockage) }}" class="btn btn-sm btn-primary" target="_blank">
+                                                        <i class="fas fa-download me-1"></i> Télécharger
                                                     </a>
+                                                    <button class="btn btn-sm btn-danger ms-1" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) { /* Ajouter l'appel AJAX pour supprimer */ }">
+                                                        <i class="fas fa-trash me-1"></i> Supprimer
+                                                    </button>
                                                 </td>
                                             </tr>
                                         {% endfor %}
@@ -363,6 +404,11 @@
                         {% else %}
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>Aucun document pour ce colis
+                            </div>
+                            <div class="text-center py-3">
+                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#documentModal">
+                                    <i class="fas fa-plus-circle me-1"></i> Ajouter un document
+                                </button>
                             </div>
                         {% endif %}
                     </div>
@@ -379,9 +425,172 @@
                 <i class="fas fa-edit me-1"></i>Modifier
             </a>
             
-            <div class="ml-auto">
-                {{ include('colis/_delete_form.html.twig') }}
+            <form method="post" action="{{ path('app_colis_delete', {'id': coli.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce colis?');" class="ml-auto">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ coli.id) }}">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-1"></i>Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modales pour les actions rapides -->
+    <!-- Modal Photo -->
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photoModalLabel">Ajouter une photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(photo_form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="mb-3">
+                            {{ form_label(photo_form.file, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(photo_form.file, {'attr': {'class': 'form-control'}}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(photo_form.file) }}
+                            </div>
+                            <small class="form-text text-muted">Formats acceptés : JPG, PNG. Taille max : 5MB</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(photo_form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(photo_form.description, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        
+                        {{ form_rest(photo_form) }}
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Enregistrer la photo</button>
+                        </div>
+                    {{ form_end(photo_form) }}
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal Document -->
+    <div class="modal fade" id="documentModal" tabindex="-1" aria-labelledby="documentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="documentModalLabel">Ajouter un document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(document_form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="mb-3">
+                            {{ form_label(document_form.nom_fichier, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(document_form.nom_fichier, {'attr': {'class': 'form-control'}}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(document_form.nom_fichier) }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(document_form.type_document, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(document_form.type_document, {'attr': {'class': 'form-select'}}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(document_form.type_document) }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form_label(document_form.file, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(document_form.file, {'attr': {'class': 'form-control'}}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(document_form.file) }}
+                            </div>
+                            <small class="form-text text-muted">Formats acceptés : PDF, DOC, DOCX, XLS, XLSX. Taille max : 10MB</small>
+                        </div>
+                        
+                        {{ form_rest(document_form) }}
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Enregistrer le document</button>
+                        </div>
+                    {{ form_end(document_form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Statut Simplifié -->
+<div class="modal fade" id="statutModal" tabindex="-1" aria-labelledby="statutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statutModalLabel">Mettre à jour le statut</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{ path('app_colis_update_statut', {'id': coli.id}) }}">
+                    <div class="mb-3">
+                        <label for="statut_type" class="form-label">Type de statut</label>
+                        <select name="statut_type" id="statut_type" class="form-select" required>
+                            <option value="en_attente">En attente</option>
+                            <option value="recu">Reçu</option>
+                            <option value="en_transit">En transit</option>
+                            <option value="en_livraison">En livraison</option>
+                            <option value="livre">Livré</option>
+                            <option value="retourne">Retourné</option>
+                            <option value="bloque_douane">Bloqué en douane</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="localisation" class="form-label">Localisation</label>
+                        <input type="text" name="localisation" id="localisation" class="form-control" 
+                               placeholder="Ex: Paris, France - Entrepôt central" required>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Enregistrer le statut</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Transport -->
+<div class="modal fade" id="transportModal" tabindex="-1" aria-labelledby="transportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transportModalLabel">Ajouter un transport</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ form_start(transport_form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    <div class="mb-3">
+                        {{ form_label(transport_form.transport, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(transport_form.transport, {'attr': {'class': 'form-select'}}) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(transport_form.transport) }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form_label(transport_form.date_association, null, {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(transport_form.date_association, {'attr': {'class': 'form-control'}}) }}
+                        <div class="invalid-feedback">
+                            {{ form_errors(transport_form.date_association) }}
+                        </div>
+                    </div>
+                    
+                    {{ form_rest(transport_form) }}
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Enregistrer le transport</button>
+                    </div>
+                {{ form_end(transport_form) }}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

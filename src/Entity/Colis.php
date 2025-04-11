@@ -28,7 +28,7 @@ class Colis
     #[ORM\Column]
     private ?float $valeur_declaree = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date_creation = null;
 
     #[ORM\Column(length: 255)]

@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/statut')]
+#[IsGranted('ROLE_USER')]  // Ajouter cette ligne
 final class StatutController extends AbstractController{
     #[Route(name: 'app_statut_index', methods: ['GET'])]
     public function index(StatutRepository $statutRepository): Response

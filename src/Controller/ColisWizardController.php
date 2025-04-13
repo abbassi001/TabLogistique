@@ -27,8 +27,10 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/colis-wizard')]
+#[IsGranted('ROLE_USER')] // Ajoutez cette ligne
 final class ColisWizardController extends AbstractController
 {
     private const SESSION_KEY = 'colis_wizard_data';

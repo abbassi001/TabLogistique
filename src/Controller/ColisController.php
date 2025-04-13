@@ -26,6 +26,7 @@ use App\Entity\Employe; // Import the Employe entity
 
 
 #[Route('/colis')]
+#[IsGranted('ROLE_USER')] // Ajoutez cette ligne
 final class ColisController extends AbstractController
 {
     #[Route(name: 'app_colis_index', methods: ['GET'])]

@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Employe;
 use App\Form\RegistrationFormType;
+use App\Form\EmployeType;
 use App\Security\SecurityControllerAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,43 +14,58 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * RegistrationController handles user registration.
- * It provides a form for new users to create an account.
+ * It provides a form for admins to create accounts for employees.
  * It also hashes the password and saves the user to the database.
  */
 
- #[IsGranted(attribute: 'ROLE_ADMIN')]
-
+#[IsGranted('ROLE_ADMIN')]
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
-        $form->handleRequest($request);
+        $employe = new Employe();
+        
+        // Créer un formulaire combiné ou deux formulaires séparés
+        $userForm = $this->createForm(RegistrationFormType::class, $user);
+        $employeForm = $this->createForm(EmployeType::class, $employe);
+        
+        $userForm->handleRequest($request);
+        $employeForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($userForm->isSubmitted() && $userForm->isValid() && $employeForm->isSubmitted() && $employeForm->isValid()) {
             /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
+            $plainPassword = $userForm->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Encode le mot de passe
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            
+            // Définir les champs supplémentaires de l'utilisateur
+            $user->setNom($employe->getNom());
+            $user->setPrenom($employe->getPrenom());
+            $user->setDateCreation(new \DateTime());
+            $user->setIsActive(true);
+            
+            // Par défaut, attribuer le rôle ROLE_USER
+            $user->setRoles(['ROLE_USER']);
 
+            // Enregistrer l'utilisateur et l'employé
             $entityManager->persist($user);
+            $entityManager->persist($employe);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-
-            return $security->login($user, SecurityControllerAuthenticator::class, 'main');
+            $this->addFlash('success', 'Utilisateur et profil employé créés avec succès.');
+            return $this->redirectToRoute('app_employe_index');
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
+            'userForm' => $userForm,
+            'employeForm' => $employeForm,
         ]);
     }
 }

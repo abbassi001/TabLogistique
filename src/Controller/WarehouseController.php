@@ -10,8 +10,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/warehouse')]
+#[IsGranted('ROLE_USER')]
 final class WarehouseController extends AbstractController{
     #[Route(name: 'app_warehouse_index', methods: ['GET'])]
     public function index(WarehouseRepository $warehouseRepository): Response
@@ -68,6 +70,7 @@ final class WarehouseController extends AbstractController{
     }
 
     #[Route('/{id}', name: 'app_warehouse_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]  // Ajouter cette ligne
     public function delete(Request $request, Warehouse $warehouse, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$warehouse->getId(), $request->getPayload()->getString('_token'))) {

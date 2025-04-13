@@ -35,18 +35,6 @@ security:
                 path: /
                 # always_remember_me: true
 
-    access_control:
-        # Accès public
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-
-        # Accès utilisateur connecté
-        - { path: ^/colis, roles: ROLE_USER }
-
-        # Accès admin uniquement
-        - { path: ^/employe, roles: ROLE_ADMIN }
-        - { path: ^/departement, roles: ROLE_ADMIN }
-        - { path: ^/warehouse, roles: ROLE_ADMIN }
-
 when@test:
     security:
         password_hashers:
@@ -55,3 +43,28 @@ when@test:
                 cost: 4
                 time_cost: 3
                 memory_cost: 10
+
+
+    access_control:
+        # Pages publiques
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        
+        # Pages sécurisées nécessitant au moins un rôle utilisateur
+        - { path: ^/expediteur, roles: ROLE_USER }
+        - { path: ^/destinataire, roles: ROLE_USER }
+        - { path: ^/transport, roles: ROLE_USER }
+        - { path: ^/colis, roles: ROLE_USER }
+        - { path: ^/warehouse, roles: ROLE_USER }
+        - { path: ^/statut, roles: ROLE_USER }
+        - { path: ^/photo, roles: ROLE_USER }
+        - { path: ^/document, roles: ROLE_USER }
+        
+        # Pages administratives
+        - { path: ^/register, roles: ROLE_ADMIN }
+        - { path: ^/employe, roles: ROLE_ADMIN }
+        - { path: ^/departement, roles: ROLE_ADMIN }
+        
+        # Restreindre toutes les autres routes (optionnel, mais recommandé)
+        - { path: ^/, roles: ROLE_USER }
+

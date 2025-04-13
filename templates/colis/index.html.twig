@@ -7,12 +7,14 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">Colis List</h1>
             <div class="flex space-x-3">
-                <a href="{{ path('app_colis_wizard_start') }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-                    <i class="fas fa-plus me-2"></i>Create new
-                </a>
-                <a href="{{ path('app_colis_wizard_start') }}" class="px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
-                    <i class="fas fa-magic me-2"></i>Assistant de création
-                </a>
+                {% if is_granted('ROLE_USER') %}
+                    <a href="{{ path('app_colis_wizard_start') }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                        <i class="fas fa-plus me-2"></i>Create new
+                    </a>
+                    <a href="{{ path('app_colis_wizard_start') }}" class="px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                        <i class="fas fa-magic me-2"></i>Assistant de création
+                    </a>
+                {% endif %}
             </div>
         </div>
 
@@ -78,12 +80,14 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="text-blue-600 hover:text-blue-900">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="text-indigo-600 hover:text-indigo-900">
-                                <i class="fas fa-edit"></i>
-                            </a>
+                            {% if is_granted('ROLE_USER') %}
+                                <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="text-blue-600 hover:text-blue-900">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="text-indigo-600 hover:text-indigo-900">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}

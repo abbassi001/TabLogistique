@@ -70,6 +70,7 @@ final class DepartementController extends AbstractController{
     }
 
     #[Route('/{id}', name: 'app_departement_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]  // Ajouter cette ligne
     public function delete(Request $request, Departement $departement, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$departement->getId(), $request->getPayload()->getString('_token'))) {

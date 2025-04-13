@@ -16,7 +16,6 @@
     </body>
 </html> #}
 
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -94,7 +93,7 @@
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="{{ path('app_colis_index') }}">
+                    <a class="navbar-brand">
                         <i class="fas fa-box me-2"></i>TAB Logistique
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,37 +101,41 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav me-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_colis_index') }}">
-                                    <i class="fas fa-box-open me-1"></i>Colis
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_expediteur_index') }}">
-                                    <i class="fas fa-paper-plane me-1"></i>Expéditeurs
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_destinataire_index') }}">
-                                    <i class="fas fa-map-marker-alt me-1"></i>Destinataires
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_transport_index') }}">
-                                    <i class="fas fa-truck me-1"></i>Transports
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_warehouse_index') }}">
-                                    <i class="fas fa-warehouse me-1"></i>Entrepôts
-                                </a>
-                            </li>
+                            {% if is_granted('ROLE_USER') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_colis_index') }}">
+                                        <i class="fas fa-box-open me-1"></i>Colis
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_expediteur_index') }}">
+                                        <i class="fas fa-paper-plane me-1"></i>Expéditeurs
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_destinataire_index') }}">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Destinataires
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_transport_index') }}">
+                                        <i class="fas fa-truck me-1"></i>Transports
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_warehouse_index') }}">
+                                        <i class="fas fa-warehouse me-1"></i>Entrepôts
+                                    </a>
+                                </li>
+                            {% endif %}
                         </ul>
                         <div class="d-flex">
-                            <form class="me-2">
-                                <input class="form-control" type="search" placeholder="Chercher un colis..." aria-label="Search">
-                                <button class="btn btn-outline-light" type="submit">Recherche</button>
-                            </form>
+                            {% if is_granted('ROLE_USER') %}
+                                <form class="me-2">
+                                    <input class="form-control" type="search" placeholder="Chercher un colis..." aria-label="Search">
+                                    <button class="btn btn-outline-light" type="submit">Recherche</button>
+                                </form>
+                            {% endif %}
                             
                             <!-- Affichage selon l'état de connexion -->
                             {% if app.user %}
@@ -143,7 +146,9 @@
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                                         <li><a class="dropdown-item" href="#"><i class="fas fa-id-card me-2"></i>Mon profil</a></li>
                                         {% if is_granted('ROLE_ADMIN') %}
-                                            <li><a class="dropdown-item" href="#"><i class="fas fa-cogs me-2"></i>Administration</a></li>
+                                            <li><a class="dropdown-item" href="{{ path('app_register') }}"><i class="fas fa-user-plus me-2"></i>Créer un utilisateur</a></li>
+                                            <li><a class="dropdown-item" href="{{ path('app_employe_index') }}"><i class="fas fa-users me-2"></i>Gestion des employés</a></li>
+                                            <li><a class="dropdown-item" href="{{ path('app_departement_index') }}"><i class="fas fa-building me-2"></i>Départements</a></li>
                                         {% endif %}
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
@@ -153,9 +158,6 @@
                                 <div>
                                     <a href="{{ path('app_login') }}" class="btn btn-outline-light me-2">
                                         <i class="fas fa-sign-in-alt me-1"></i>Connexion
-                                    </a>
-                                    <a href="{{ path('app_register') }}" class="btn btn-primary">
-                                        <i class="fas fa-user-plus me-1"></i>Inscription
                                     </a>
                                 </div>
                             {% endif %}

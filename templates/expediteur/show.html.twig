@@ -3,40 +3,58 @@
 {% block title %}Expediteur{% endblock %}
 
 {% block body %}
-    <h1>Expediteur</h1>
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Expediteur Details</h1>
+        </div>
+        
+        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <table class="min-w-full divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Id</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ expediteur.id }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom_entreprise_individu</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ expediteur.nomEntrepriseIndividu }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telephone</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ expediteur.telephone }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ expediteur.email }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ expediteur.pays }}</td>
+                    </tr>
+                    <tr>
+                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse_complete</th>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ expediteur.adresseComplete }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ expediteur.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom_entreprise_individu</th>
-                <td>{{ expediteur.nomEntrepriseIndividu }}</td>
-            </tr>
-            <tr>
-                <th>Telephone</th>
-                <td>{{ expediteur.telephone }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ expediteur.email }}</td>
-            </tr>
-            <tr>
-                <th>Pays</th>
-                <td>{{ expediteur.pays }}</td>
-            </tr>
-            <tr>
-                <th>Adresse_complete</th>
-                <td>{{ expediteur.adresseComplete }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="flex items-center space-x-4 mt-6">
+            <a href="{{ path('app_expediteur_index') }}" class="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
+                Back to list
+            </a>
 
-    <a href="{{ path('app_expediteur_index') }}">back to list</a>
+            {% if is_granted('ROLE_USER') %}
+                <a href="{{ path('app_expediteur_edit', {'id': expediteur.id}) }}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                    Edit
+                </a>
+            {% endif %}
 
-    <a href="{{ path('app_expediteur_edit', {'id': expediteur.id}) }}">edit</a>
-
-    {{ include('expediteur/_delete_form.html.twig') }}
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="ml-auto">
+                    {{ include('expediteur/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

@@ -10,8 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/expediteur')]
+#[IsGranted('ROLE_USER')]
+
 final class ExpediteurController extends AbstractController{
     #[Route(name: 'app_expediteur_index', methods: ['GET'])]
     public function index(ExpediteurRepository $expediteurRepository): Response
@@ -68,6 +71,7 @@ final class ExpediteurController extends AbstractController{
     }
 
     #[Route('/{id}', name: 'app_expediteur_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, Expediteur $expediteur, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$expediteur->getId(), $request->getPayload()->getString('_token'))) {

@@ -9,6 +9,7 @@ use App\Entity\DocumentSupport;
 use App\Entity\Expediteur;
 use App\Entity\Photo;
 use App\Entity\Statut;
+use App\Entity\Employe;
 use App\Entity\Transport;
 use App\Enum\StatusType;
 use App\Form\ColisBasicType;
@@ -31,6 +32,13 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 final class ColisWizardController extends AbstractController
 {
     private const SESSION_KEY = 'colis_wizard_data';
+
+    private EntityManagerInterface $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
     // Correction : La méthode getWizardData ne doit pas s'appeler elle-même
     private function getWizardData(SessionInterface $session): array
@@ -257,7 +265,8 @@ final class ColisWizardController extends AbstractController
             'max_step' => $wizardData['max_step']
         ]);
     }
-    
+
+
     #[Route('/step4', name: 'app_colis_wizard_step4', methods: ['GET', 'POST'])]
     public function step4(Request $request, SessionInterface $session): Response
     {
@@ -278,12 +287,23 @@ final class ColisWizardController extends AbstractController
             if (isset($formData['type_statut'])) $statut->setTypeStatut(StatusType::from($formData['type_statut']));
             if (isset($formData['date_statut'])) $statut->setDateStatut(new \DateTime($formData['date_statut']));
             if (isset($formData['localisation'])) $statut->setLocalisation($formData['localisation']);
+            // Gérer l'employé si nécessaire
+            if (isset($formData['employe_id']) && $formData['employe_id']) {
+                $employe = $this->entityManager->getRepository(Employe::class)->find($formData['employe_id']);
+                if ($employe) {
+                    $statut->setEmploye($employe);
+                }
+            }
         } else {
             // Valeurs par défaut
             $statut->setLocalisation('Réception entrepôt');
         }
         
-        $form = $this->createForm(StatutType::class, $statut);
+        // Création du formulaire avec l'option wizard_mode à true
+        $form = $this->createForm(StatutType::class, $statut, [
+            'wizard_mode' => true,
+        ]);
+        
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
@@ -306,7 +326,7 @@ final class ColisWizardController extends AbstractController
         }
         
         return $this->render('colis_wizard/step4.html.twig', [
-            'form' => $form,
+            'form' => $form->createView(),
             'current_step' => 4,
             'max_step' => $wizardData['max_step']
         ]);
@@ -592,6 +612,8 @@ final class ColisWizardController extends AbstractController
             $colis->setDestinataire($destinataire);
             
             $entityManager->persist($colis);
+            // Flush ici pour avoir l'ID du colis
+            $entityManager->flush();
             
             // 4. Créer le statut initial
             if (!empty($wizardData['statut'])) {
@@ -599,7 +621,15 @@ final class ColisWizardController extends AbstractController
                 $statut->setTypeStatut(StatusType::from($wizardData['statut']['type_statut']));
                 $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
                 $statut->setLocalisation($wizardData['statut']['localisation']);
-                $statut->setColis($colis);
+                $statut->setColis($colis); // Associer le statut au nouveau colis
+                
+                // Gérer l'employé si nécessaire
+                if (isset($wizardData['statut']['employe_id']) && $wizardData['statut']['employe_id']) {
+                    $employe = $entityManager->getRepository(Employe::class)->find($wizardData['statut']['employe_id']);
+                    if ($employe) {
+                        $statut->setEmploye($employe);
+                    }
+                }
                 
                 $entityManager->persist($statut);
             }

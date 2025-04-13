@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Enum\StatusType; // Ensure the correct namespace for StatusType
+use App\Entity\Employe; // Import the Employe entity
 
 
 #[Route('/colis')]
@@ -233,33 +234,41 @@ final class ColisController extends AbstractController
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
 
-    // Dans src/Controller/ColisController.php
-#[Route('/{id}/update-statut', name: 'app_colis_update_statut', methods: ['POST'])]
-public function updateStatut(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
-{
-    // Créer un nouveau statut
-    $statut = new Statut();
-    $statut->setColis($coli);
-    $statut->setDateStatut(new \DateTime());
-    
-    // Récupérer les données du formulaire
-    $statutType = $request->request->get('statut_type'); // Récupère la valeur du champ 'statut_type'
-    $localisation = $request->request->get('localisation'); // Récupère la valeur du champ 'localisation'
-    
-    // Définir le type de statut
-    $statut->setTypeStatut(StatusType::from($statutType));
-    $statut->setLocalisation($localisation);
-    
-    // Sauvegarder dans la base de données
-    $entityManager->persist($statut);
-    $entityManager->flush();
-    
-    // Ajouter un message flash
-    $this->addFlash('success', 'Le statut du colis a été mis à jour avec succès.');
-    
-    // Rediriger vers la page de détail du colis
-    return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
-}
+    #[Route('/{id}/update-statut', name: 'app_colis_update_statut', methods: ['POST'])]
+    public function updateStatut(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
+    {
+        // Créer un nouveau statut
+        $statut = new Statut();
+        $statut->setColis($coli);
+        $statut->setDateStatut(new \DateTime());
+        
+        // Récupérer les données du formulaire
+        $statutType = $request->request->get('statut_type'); // Récupère la valeur du champ 'statut_type'
+        $localisation = $request->request->get('localisation'); // Récupère la valeur du champ 'localisation'
+        $employeId = $request->request->get('employe_id'); // Récupère l'ID de l'employé si présent
+        
+        // Définir le type de statut
+        $statut->setTypeStatut(StatusType::from($statutType));
+        $statut->setLocalisation($localisation);
+        
+        // Si un employé est sélectionné, l'associer au statut
+        if ($employeId) {
+            $employe = $entityManager->getRepository(Employe::class)->find($employeId);
+            if ($employe) {
+                $statut->setEmploye($employe);
+            }
+        }
+        
+        // Sauvegarder dans la base de données
+        $entityManager->persist($statut);
+        $entityManager->flush();
+        
+        // Ajouter un message flash
+        $this->addFlash('success', 'Le statut du colis a été mis à jour avec succès.');
+        
+        // Rediriger vers la page de détail du colis
+        return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
+    }
     
     #[Route('/{id}/add-transport', name: 'app_colis_add_transport', methods: ['POST'])]
     public function addTransport(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response

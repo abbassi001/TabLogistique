@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Enum\StatusType; // Ensure the correct namespace for StatusType
 use App\Entity\Employe; // Import the Employe entity
 
@@ -110,6 +111,7 @@ final class ColisController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_colis_delete', methods: ['POST'])]
     public function delete(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
     {

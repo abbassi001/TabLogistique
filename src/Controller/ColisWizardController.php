@@ -566,57 +566,319 @@ final class ColisWizardController extends AbstractController
         ]);
     }
     
-    #[Route('/save', name: 'app_colis_wizard_save', methods: ['GET'])]
-    public function save(EntityManagerInterface $entityManager, SessionInterface $session): Response
-    {
-        $wizardData = $this->getWizardData($session);
+    // #[Route('/save', name: 'app_colis_wizard_save', methods: ['GET'])]
+    // public function save(EntityManagerInterface $entityManager, SessionInterface $session): Response
+    // {
+    //     $wizardData = $this->getWizardData($session);
         
-        // Vérifier que les données essentielles sont présentes
-        if (empty($wizardData['colis']) || empty($wizardData['destinataire'])) {
-            $this->addFlash('error', 'Des informations essentielles sont manquantes.');
-            return $this->redirectToRoute('app_colis_wizard_start');
+    //     // Vérifier que les données essentielles sont présentes
+    //     if (empty($wizardData['colis']) || empty($wizardData['destinataire'])) {
+    //         $this->addFlash('error', 'Des informations essentielles sont manquantes.');
+    //         return $this->redirectToRoute('app_colis_wizard_start');
+    //     }
+        
+    //     try {
+    //         // 1. Créer ou récupérer l'expéditeur
+    //         $expediteur = null;
+    //         if (!empty($wizardData['expediteur'])) {
+    //             $expediteur = new Expediteur();
+    //             $expediteur->setNomEntrepriseIndividu($wizardData['expediteur']['nom_entreprise_individu']);
+    //             $expediteur->setTelephone($wizardData['expediteur']['telephone']);
+    //             $expediteur->setEmail($wizardData['expediteur']['email']);
+    //             $expediteur->setPays($wizardData['expediteur']['pays']);
+    //             $expediteur->setAdresseComplete($wizardData['expediteur']['adresse_complete']);
+    //             $entityManager->persist($expediteur);
+    //         }
+            
+    //         // 2. Créer le destinataire
+    //         $destinataire = new Destinataire();
+    //         $destinataire->setNomEntrepriseIndividu($wizardData['destinataire']['nom_entreprise_individu']);
+    //         $destinataire->setTelephone($wizardData['destinataire']['telephone']);
+    //         $destinataire->setEmail($wizardData['destinataire']['email']);
+    //         $destinataire->setPays($wizardData['destinataire']['pays']);
+    //         $destinataire->setAdresseComplete($wizardData['destinataire']['adresse_complete']);
+    //         $entityManager->persist($destinataire);
+            
+    //         // 3. Créer le colis
+    //         $colis = new Colis();
+    //         $colis->setCodeTracking($wizardData['colis']['codeTracking']);
+    //         $colis->setDimensions($wizardData['colis']['dimensions']);
+    //         $colis->setPoids((float)$wizardData['colis']['poids']);
+    //         $colis->setValeurDeclaree((float)$wizardData['colis']['valeur_declaree']);
+    //         $colis->setDateCreation(new \DateTime($wizardData['colis']['date_creation']));
+    //         $colis->setNatureMarchandise($wizardData['colis']['nature_marchandise']);
+    //         $colis->setDescriptionMarchandise($wizardData['colis']['description_marchandise']);
+    //         $colis->setClassificationDouaniere($wizardData['colis']['classification_douaniere']);
+            
+    //         $colis->setExpediteur($expediteur);
+    //         $colis->setDestinataire($destinataire);
+            
+    //         $entityManager->persist($colis);
+    //         // Flush ici pour avoir l'ID du colis
+    //         $entityManager->flush();
+            
+    //         // 4. Créer le statut initial
+    //         if (!empty($wizardData['statut'])) {
+    //             $statut = new Statut();
+    //             $statut->setTypeStatut(StatusType::from($wizardData['statut']['type_statut']));
+    //             $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
+    //             $statut->setLocalisation($wizardData['statut']['localisation']);
+    //             $statut->setColis($colis); // Associer le statut au nouveau colis
+                
+    //             // Gérer l'employé si nécessaire
+    //             if (isset($wizardData['statut']['employe_id']) && $wizardData['statut']['employe_id']) {
+    //                 $employe = $entityManager->getRepository(Employe::class)->find($wizardData['statut']['employe_id']);
+    //                 if ($employe) {
+    //                     $statut->setEmploye($employe);
+    //                 }
+    //             }
+                
+    //             $entityManager->persist($statut);
+    //         }
+            
+    //         // 5. Créer le transport et l'association avec le colis
+    //         if (!empty($wizardData['transport'])) {
+    //             $transport = new Transport();
+    //             $transport->setTypeTransport($wizardData['transport']['type_transport']);
+    //             $transport->setCompagnieTransport($wizardData['transport']['compagnie_transport']);
+    //             $transport->setNumeroVolNavire($wizardData['transport']['numero_vol_navire']);
+    //             if (!empty($wizardData['transport']['date_depart'])) {
+    //                 $transport->setDateDepart(new \DateTime($wizardData['transport']['date_depart']));
+    //             }
+    //             $transport->setLieuDepart($wizardData['transport']['lieu_depart']);
+    //             $transport->setDateArrivee(new \DateTime($wizardData['transport']['date_arrivee']));
+    //             $transport->setLieuArrivee($wizardData['transport']['lieu_arrivee']);
+                
+    //             $entityManager->persist($transport);
+                
+    //             // Association Colis-Transport
+    //             $colisTransport = new ColisTransport();
+    //             $colisTransport->setColis($colis);
+    //             $colisTransport->setTransport($transport);
+    //             $colisTransport->setDateAssociation(new \DateTime());
+                
+    //             $entityManager->persist($colisTransport);
+    //         }
+            
+    //         // 6. Ajouter les photos
+    //         if (!empty($wizardData['photos'])) {
+    //             foreach ($wizardData['photos'] as $photoData) {
+    //                 $photo = new Photo();
+    //                 $photo->setUrlPhoto($photoData['urlPhoto']);
+    //                 $photo->setDateUpload(new \DateTime($photoData['dateUpload']));
+    //                 if (isset($photoData['description'])) {
+    //                     $photo->setDescription($photoData['description']);
+    //                 }
+    //                 $photo->setColis($colis);
+                    
+    //                 $entityManager->persist($photo);
+    //             }
+    //         }
+            
+    //         // 7. Ajouter les documents
+    //         if (!empty($wizardData['documents'])) {
+    //             foreach ($wizardData['documents'] as $documentData) {
+    //                 $document = new DocumentSupport();
+    //                 $document->setNomFichier($documentData['nomFichier']);
+    //                 $document->setTypeDocument($documentData['typeDocument']);
+    //                 $document->setDateUpload(new \DateTime($documentData['dateUpload']));
+    //                 $document->setCheminStockage($documentData['cheminStockage']);
+    //                 $document->setColis($colis);
+                    
+    //                 $entityManager->persist($document);
+    //             }
+    //         }
+            
+    //         // Enregistrer tout en base de données
+    //         $entityManager->flush();
+            
+    //         // Nettoyer la session
+    //         $session->remove(self::SESSION_KEY);
+            
+    //         $this->addFlash('success', 'Le colis a été créé avec succès !');
+            
+    //         // Rediriger vers la page de détail du colis
+    //         return $this->redirectToRoute('app_colis_show', ['id' => $colis->getId()]);
+            
+    //     } catch (\Exception $e) {
+    //         $this->addFlash('error', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
+    //         return $this->redirectToRoute('app_colis_wizard_review');
+    //     }
+    // }
+
+
+    #[Route('/{id}/edit', name: 'app_colis_wizard_edit', methods: ['GET'])]
+public function editStart(Colis $colis, SessionInterface $session): Response
+{
+    // Initialiser les données du wizard avec les informations du colis existant
+    $wizardData = [
+        'is_edit' => true,
+        'colis_id' => $colis->getId(),
+        'max_step' => 1,
+        'current_step' => 1,
+        'colis' => [
+            'codeTracking' => $colis->getCodeTracking(),
+            'dimensions' => $colis->getDimensions(),
+            'poids' => $colis->getPoids(),
+            'valeur_declaree' => $colis->getValeurDeclaree(),
+            'date_creation' => $colis->getDateCreation()->format('Y-m-d H:i:s'),
+            'nature_marchandise' => $colis->getNatureMarchandise(),
+            'description_marchandise' => $colis->getDescriptionMarchandise(),
+            'classification_douaniere' => $colis->getClassificationDouaniere()
+        ],
+        'expediteur' => $colis->getExpediteur() ? [
+            'nom_entreprise_individu' => $colis->getExpediteur()->getNomEntrepriseIndividu(),
+            'telephone' => $colis->getExpediteur()->getTelephone(),
+            'email' => $colis->getExpediteur()->getEmail(),
+            'pays' => $colis->getExpediteur()->getPays(),
+            'adresse_complete' => $colis->getExpediteur()->getAdresseComplete()
+        ] : [],
+        'destinataire' => $colis->getDestinataire() ? [
+            'nom_entreprise_individu' => $colis->getDestinataire()->getNomEntrepriseIndividu(),
+            'telephone' => $colis->getDestinataire()->getTelephone(),
+            'email' => $colis->getDestinataire()->getEmail(),
+            'pays' => $colis->getDestinataire()->getPays(),
+            'adresse_complete' => $colis->getDestinataire()->getAdresseComplete()
+        ] : [],
+        'statut' => $colis->getStatuts() && count($colis->getStatuts()) > 0 ? [
+            'type_statut' => $colis->getStatuts()[0]->getTypeStatut()->value,
+            'date_statut' => $colis->getStatuts()[0]->getDateStatut()->format('Y-m-d H:i:s'),
+            'localisation' => $colis->getStatuts()[0]->getLocalisation(),
+            'employe_id' => $colis->getStatuts()[0]->getEmploye() ? $colis->getStatuts()[0]->getEmploye()->getId() : null
+        ] : [],
+        'transport' => $colis->getColisTransports() && count($colis->getColisTransports()) > 0 ? [
+            'type_transport' => $colis->getColisTransports()[0]->getTransport()->getTypeTransport(),
+            'compagnie_transport' => $colis->getColisTransports()[0]->getTransport()->getCompagnieTransport(),
+            'numero_vol_navire' => $colis->getColisTransports()[0]->getTransport()->getNumeroVolNavire(),
+            'date_depart' => $colis->getColisTransports()[0]->getTransport()->getDateDepart() ? $colis->getColisTransports()[0]->getTransport()->getDateDepart()->format('Y-m-d H:i:s') : null,
+            'lieu_depart' => $colis->getColisTransports()[0]->getTransport()->getLieuDepart(),
+            'date_arrivee' => $colis->getColisTransports()[0]->getTransport()->getDateArrivee() ? $colis->getColisTransports()[0]->getTransport()->getDateArrivee()->format('Y-m-d H:i:s') : null,
+            'lieu_arrivee' => $colis->getColisTransports()[0]->getTransport()->getLieuArrivee()
+        ] : [],
+        'photos' => [],
+        'documents' => []
+    ];
+    
+    // Ajouter les photos existantes
+    if($colis->getPhotos() && count($colis->getPhotos()) > 0) {
+        foreach($colis->getPhotos() as $photo) {
+            $wizardData['photos'][] = [
+                'urlPhoto' => $photo->getUrlPhoto(),
+                'dateUpload' => $photo->getDateUpload()->format('Y-m-d H:i:s'),
+                'description' => $photo->getDescription()
+            ];
+        }
+    }
+    
+    // Ajouter les documents existants
+    if($colis->getDocuments() && count($colis->getDocuments()) > 0) {
+        foreach($colis->getDocuments() as $document) {
+            $wizardData['documents'][] = [
+                'nomFichier' => $document->getNomFichier(),
+                'typeDocument' => $document->getTypeDocument(),
+                'dateUpload' => $document->getDateUpload()->format('Y-m-d H:i:s'),
+                'cheminStockage' => $document->getCheminStockage()
+            ];
+        }
+    }
+    
+    // Déterminer l'étape maximale en fonction des données existantes
+    $wizardData['max_step'] = 8; // Toutes les étapes sont disponibles en mode édition
+    
+    $session->set(self::SESSION_KEY, $wizardData);
+    
+    // Rediriger vers la première étape du wizard
+    return $this->redirectToRoute('app_colis_wizard_step1');
+}
+
+// Modifier la méthode save pour prendre en compte l'édition
+#[Route('/save', name: 'app_colis_wizard_save', methods: ['GET'])]
+public function save(EntityManagerInterface $entityManager, SessionInterface $session): Response
+{
+    $wizardData = $this->getWizardData($session);
+    
+    // Vérifier que les données essentielles sont présentes
+    if (empty($wizardData['colis']) || empty($wizardData['destinataire'])) {
+        $this->addFlash('error', 'Des informations essentielles sont manquantes.');
+        return $this->redirectToRoute('app_colis_wizard_start');
+    }
+    
+    try {
+        // Déterminer s'il s'agit d'une création ou d'une édition
+        $isEdit = isset($wizardData['is_edit']) && $wizardData['is_edit'] === true;
+        $colis = null;
+        
+        if ($isEdit && isset($wizardData['colis_id'])) {
+            // Mode édition: récupérer le colis existant
+            $colis = $entityManager->getRepository(Colis::class)->find($wizardData['colis_id']);
+            
+            if (!$colis) {
+                throw new \Exception('Colis non trouvé pour l\'édition');
+            }
+        } else {
+            // Mode création: créer un nouveau colis
+            $colis = new Colis();
         }
         
-        try {
-            // 1. Créer ou récupérer l'expéditeur
-            $expediteur = null;
-            if (!empty($wizardData['expediteur'])) {
+        // 1. Créer ou récupérer l'expéditeur
+        $expediteur = null;
+        if (!empty($wizardData['expediteur'])) {
+            if ($isEdit && $colis->getExpediteur()) {
+                // Mise à jour de l'expéditeur existant
+                $expediteur = $colis->getExpediteur();
+            } else {
+                // Création d'un nouvel expéditeur
                 $expediteur = new Expediteur();
-                $expediteur->setNomEntrepriseIndividu($wizardData['expediteur']['nom_entreprise_individu']);
-                $expediteur->setTelephone($wizardData['expediteur']['telephone']);
-                $expediteur->setEmail($wizardData['expediteur']['email']);
-                $expediteur->setPays($wizardData['expediteur']['pays']);
-                $expediteur->setAdresseComplete($wizardData['expediteur']['adresse_complete']);
-                $entityManager->persist($expediteur);
             }
             
-            // 2. Créer le destinataire
+            $expediteur->setNomEntrepriseIndividu($wizardData['expediteur']['nom_entreprise_individu']);
+            $expediteur->setTelephone($wizardData['expediteur']['telephone']);
+            $expediteur->setEmail($wizardData['expediteur']['email']);
+            $expediteur->setPays($wizardData['expediteur']['pays']);
+            $expediteur->setAdresseComplete($wizardData['expediteur']['adresse_complete']);
+            $entityManager->persist($expediteur);
+        }
+        
+        // 2. Créer ou mettre à jour le destinataire
+        $destinataire = null;
+        if ($isEdit && $colis->getDestinataire()) {
+            // Mise à jour du destinataire existant
+            $destinataire = $colis->getDestinataire();
+        } else {
+            // Création d'un nouveau destinataire
             $destinataire = new Destinataire();
-            $destinataire->setNomEntrepriseIndividu($wizardData['destinataire']['nom_entreprise_individu']);
-            $destinataire->setTelephone($wizardData['destinataire']['telephone']);
-            $destinataire->setEmail($wizardData['destinataire']['email']);
-            $destinataire->setPays($wizardData['destinataire']['pays']);
-            $destinataire->setAdresseComplete($wizardData['destinataire']['adresse_complete']);
-            $entityManager->persist($destinataire);
-            
-            // 3. Créer le colis
-            $colis = new Colis();
-            $colis->setCodeTracking($wizardData['colis']['codeTracking']);
-            $colis->setDimensions($wizardData['colis']['dimensions']);
-            $colis->setPoids((float)$wizardData['colis']['poids']);
-            $colis->setValeurDeclaree((float)$wizardData['colis']['valeur_declaree']);
-            $colis->setDateCreation(new \DateTime($wizardData['colis']['date_creation']));
-            $colis->setNatureMarchandise($wizardData['colis']['nature_marchandise']);
-            $colis->setDescriptionMarchandise($wizardData['colis']['description_marchandise']);
-            $colis->setClassificationDouaniere($wizardData['colis']['classification_douaniere']);
-            
-            $colis->setExpediteur($expediteur);
-            $colis->setDestinataire($destinataire);
-            
-            $entityManager->persist($colis);
-            // Flush ici pour avoir l'ID du colis
-            $entityManager->flush();
-            
+        }
+        
+        $destinataire->setNomEntrepriseIndividu($wizardData['destinataire']['nom_entreprise_individu']);
+        $destinataire->setTelephone($wizardData['destinataire']['telephone']);
+        $destinataire->setEmail($wizardData['destinataire']['email']);
+        $destinataire->setPays($wizardData['destinataire']['pays']);
+        $destinataire->setAdresseComplete($wizardData['destinataire']['adresse_complete']);
+        $entityManager->persist($destinataire);
+        
+        // 3. Mettre à jour le colis
+        $colis->setCodeTracking($wizardData['colis']['codeTracking']);
+        $colis->setDimensions($wizardData['colis']['dimensions']);
+        $colis->setPoids((float)$wizardData['colis']['poids']);
+        $colis->setValeurDeclaree((float)$wizardData['colis']['valeur_declaree']);
+        $colis->setDateCreation(new \DateTime($wizardData['colis']['date_creation']));
+        $colis->setNatureMarchandise($wizardData['colis']['nature_marchandise']);
+        $colis->setDescriptionMarchandise($wizardData['colis']['description_marchandise']);
+        $colis->setClassificationDouaniere($wizardData['colis']['classification_douaniere']);
+        
+        $colis->setExpediteur($expediteur);
+        $colis->setDestinataire($destinataire);
+        
+        $entityManager->persist($colis);
+        // Flush ici pour avoir l'ID du colis
+        $entityManager->flush();
+        
+        // En mode édition, on gère différemment les relations (statuts, photos, etc.)
+        if ($isEdit) {
+            // Message spécifique
+            $this->addFlash('success', 'Le colis a été modifié avec succès !');
+        } else {
+            // Code existant pour la création
             // 4. Créer le statut initial
             if (!empty($wizardData['statut'])) {
                 $statut = new Statut();
@@ -689,22 +951,24 @@ final class ColisWizardController extends AbstractController
                 }
             }
             
-            // Enregistrer tout en base de données
-            $entityManager->flush();
-            
-            // Nettoyer la session
-            $session->remove(self::SESSION_KEY);
-            
+            // Message pour mode création
             $this->addFlash('success', 'Le colis a été créé avec succès !');
-            
-            // Rediriger vers la page de détail du colis
-            return $this->redirectToRoute('app_colis_show', ['id' => $colis->getId()]);
-            
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
-            return $this->redirectToRoute('app_colis_wizard_review');
         }
+        
+        // Enregistrer tout en base de données
+        $entityManager->flush();
+        
+        // Nettoyer la session
+        $session->remove(self::SESSION_KEY);
+        
+        // Rediriger vers la page de détail du colis
+        return $this->redirectToRoute('app_colis_show', ['id' => $colis->getId()]);
+        
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
+        return $this->redirectToRoute('app_colis_wizard_review');
     }
+}
     
     #[Route('/cancel', name: 'app_colis_wizard_cancel', methods: ['GET'])]
     public function cancel(SessionInterface $session): Response

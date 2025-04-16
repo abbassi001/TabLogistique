@@ -47,4 +47,15 @@
             </div>
         </div>
     {{ form_end(form) }}
+    {# Ajout de votre fichier JavaScript de wizard #}
+{% block javascripts %}
+    {# JavaScript de base #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {# Votre fichier wizard.js #}
+    <script src="{{ asset('javascript/wizard.js') }}"></script>
+    
+    {# Scripts additionnels spécifiques à chaque page #}
+    {% block page_scripts %}{% endblock %}
+{% endblock %}
 {% endblock %}

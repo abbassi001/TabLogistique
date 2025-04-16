@@ -107,22 +107,11 @@ final class ColisController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_colis_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ColisType::class, $coli);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_colis_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('colis/edit.html.twig', [
-            'coli' => $coli,
-            'form' => $form,
-        ]);
-    }
+public function edit(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
+{
+    // Rediriger vers le wizard en mode édition avec l'ID du colis
+    return $this->redirectToRoute('app_colis_wizard_edit', ['id' => $coli->getId()]);
+}
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_colis_delete', methods: ['POST'])]

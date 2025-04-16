@@ -54,7 +54,7 @@ class SecurityControllerAuthenticator extends AbstractLoginFormAuthenticator
         $roles = $user->getRoles();
         
         if (in_array('ROLE_ADMIN', $roles)) {
-            return new RedirectResponse($this->urlGenerator->generate('app_employe_index')); // Les admins vont vers la gestion des employés
+            return new RedirectResponse($this->urlGenerator->generate('app_colis_index')); // Les admins vont vers la gestion des employés
         }
 
         // Par défaut, redirection vers la liste des colis

@@ -30,31 +30,43 @@ use App\Entity\Employe; // Import the Employe entity
 final class ColisController extends AbstractController
 {
     #[Route(name: 'app_colis_index', methods: ['GET'])]
-    public function index(ColisRepository $colisRepository): Response
+    public function index(Request $request, ColisRepository $colisRepository): Response
     {
+        $page = $request->query->getInt('page', 1);
+        $search = $request->query->get('search', '');
+        
+        $filters = [
+            'search' => $search,
+            'dateMin' => $request->query->get('dateMin'),
+            'dateMax' => $request->query->get('dateMax'),
+            'expediteur' => $request->query->get('expediteur'),
+            'destinataire' => $request->query->get('destinataire'),
+            'status' => $request->query->get('status')
+        ];
+        
+        $order = [
+            $request->query->get('sort', 'id') => $request->query->get('direction', 'DESC')
+        ];
+        
+        $result = $colisRepository->findAllPaginated($page, 10, $filters, $order);
+        
         return $this->render('colis/index.html.twig', [
-            'colis' => $colisRepository->findAll(),
+            'colis' => $result['items'],
+            'pagination' => [
+                'currentPage' => $result['currentPage'],
+                'totalPages' => $result['totalPages'],
+                'totalItems' => $result['totalItems']
+            ],
+            'filters' => $filters,
+            'order' => $order
         ]);
     }
 
     #[Route('/new', name: 'app_colis_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
-        $coli = new Colis();
-        $form = $this->createForm(ColisType::class, $coli);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($coli);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_colis_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('colis/new.html.twig', [
-            'coli' => $coli,
-            'form' => $form,
-        ]);
+        // Rediriger vers le wizard de création de colis au lieu d'utiliser le formulaire simple
+        return $this->redirectToRoute('app_colis_wizard_start');
     }
 
     #[Route('/{id}', name: 'app_colis_show', methods: ['GET'])]

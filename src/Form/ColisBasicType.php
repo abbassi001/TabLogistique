@@ -16,13 +16,13 @@ class ColisBasicType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('codeTracking', TextType::class, [
-                'label' => 'Code de suivi',
-                'attr' => [
-                    'placeholder' => 'Ex: TAB123456789',
-                    'class' => 'form-control'
-                ]
-            ])
+            // ->add('codeTracking', TextType::class, [
+            //     'label' => 'Code de suivi',
+            //     'attr' => [
+            //         'placeholder' => 'Ex: TAB123456789',
+            //         'class' => 'form-control'
+            //     ]
+            // ])
             ->add('dimensions', TextType::class, [
                 'label' => 'Dimensions (L x l x h)',
                 'attr' => [

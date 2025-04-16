@@ -16,7 +16,7 @@ class Colis
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $codeTracking = null;
 
     #[ORM\Column(length: 255)]
@@ -80,7 +80,7 @@ class Colis
         return $this->codeTracking;
     }
 
-    public function setCodeTracking(string $codeTracking): static
+    public function setCodeTracking(?string $codeTracking): static
     {
         $this->codeTracking = $codeTracking;
 

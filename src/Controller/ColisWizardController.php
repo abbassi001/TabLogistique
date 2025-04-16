@@ -879,7 +879,7 @@ public function save(EntityManagerInterface $entityManager, SessionInterface $se
         $entityManager->persist($destinataire);
         
         // 3. Mettre à jour le colis
-        $colis->setCodeTracking($wizardData['colis']['codeTracking']);
+        // Ne pas définir le codeTracking, il sera généré automatiquement
         $colis->setDimensions($wizardData['colis']['dimensions']);
         $colis->setPoids((float)$wizardData['colis']['poids']);
         $colis->setValeurDeclaree((float)$wizardData['colis']['valeur_declaree']);
@@ -891,9 +891,17 @@ public function save(EntityManagerInterface $entityManager, SessionInterface $se
         $colis->setExpediteur($expediteur);
         $colis->setDestinataire($destinataire);
         
+        // Persistez le colis pour qu'il ait un ID
         $entityManager->persist($colis);
-        // Flush ici pour avoir l'ID du colis
         $entityManager->flush();
+        
+        // Générer le code de tracking automatiquement après avoir obtenu l'ID
+        if (!$isEdit || $colis->getCodeTracking() === null) {
+            $currentYear = (new \DateTime())->format('Y');
+            $codeTracking = sprintf('TAB-%06d-%s', $colis->getId(), $currentYear);
+            $colis->setCodeTracking($codeTracking);
+            $entityManager->persist($colis);
+        }
         
         // En mode édition, on gère différemment les relations (statuts, photos, etc.)
         if ($isEdit) {
@@ -930,7 +938,9 @@ public function save(EntityManagerInterface $entityManager, SessionInterface $se
                     $transport->setDateDepart(new \DateTime($wizardData['transport']['date_depart']));
                 }
                 $transport->setLieuDepart($wizardData['transport']['lieu_depart']);
-                $transport->setDateArrivee(new \DateTime($wizardData['transport']['date_arrivee']));
+                if (!empty($wizardData['transport']['date_arrivee'])) {
+                    $transport->setDateArrivee(new \DateTime($wizardData['transport']['date_arrivee']));
+                }
                 $transport->setLieuArrivee($wizardData['transport']['lieu_arrivee']);
                 
                 $entityManager->persist($transport);

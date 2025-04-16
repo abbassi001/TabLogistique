@@ -72,6 +72,19 @@ final class ColisController extends AbstractController
     #[Route('/{id}', name: 'app_colis_show', methods: ['GET'])]
     public function show(Colis $coli): Response
     {
+        // Vérifier si le code de tracking est défini, sinon le générer
+        if ($coli->getCodeTracking() === null) {
+            // Générer le code de tracking
+            $currentYear = (new \DateTime())->format('Y');
+            $codeTracking = sprintf('TAB-%06d-%s', $coli->getId(), $currentYear);
+            
+            // Mettre à jour le colis
+            $coli->setCodeTracking($codeTracking);
+            $entityManager = $this->container->get('doctrine')->getManager();
+            $entityManager->persist($coli);
+            $entityManager->flush();
+        }
+        
         // Création des formulaires vides pour les actions rapides
         $photo = new Photo();
         $photo->setColis($coli);
@@ -107,26 +120,26 @@ final class ColisController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_colis_edit', methods: ['GET', 'POST'])]
-public function edit(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
-{
-    // Rediriger vers le wizard en mode édition avec l'ID du colis
-    return $this->redirectToRoute('app_colis_wizard_edit', ['id' => $coli->getId()]);
-}
+    public function edit(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
+    {
+        // Rediriger vers le wizard en mode édition avec l'ID du colis
+        return $this->redirectToRoute('app_colis_wizard_edit', ['id' => $coli->getId()]);
+    }
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_colis_delete', methods: ['POST'])]
     public function delete(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$coli->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $coli->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($coli);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_colis_index', [], Response::HTTP_SEE_OTHER);
     }
-    
+
     // Nouvelles méthodes pour les actions rapides
-    
+
     #[Route('/{id}/add-photo', name: 'app_colis_add_photo', methods: ['POST'])]
     public function addPhoto(Request $request, Colis $coli, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
@@ -134,43 +147,43 @@ public function edit(Request $request, Colis $coli, EntityManagerInterface $enti
         $photo->setColis($coli);
         $form = $this->createForm(PhotoType::class, $photo);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             // Gestion du téléchargement de l'image si nécessaire
             $photoFile = $form->get('file')->getData();
-            
+
             if ($photoFile) {
                 $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$photoFile->guessExtension();
-                
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $photoFile->guessExtension();
+
                 try {
                     $photoFile->move(
                         $this->getParameter('photos_directory'),
                         $newFilename
                     );
-                    
+
                     $photo->setUrlPhoto($newFilename);
                 } catch (FileException $e) {
                     // Gestion de l'erreur
                     $this->addFlash('error', 'Une erreur est survenue lors du téléchargement de la photo.');
                 }
             }
-            
+
             $photo->setDateUpload(new \DateTime());
             $entityManager->persist($photo);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'La photo a été ajoutée avec succès.');
         } else {
             foreach ($form->getErrors(true) as $error) {
                 $this->addFlash('error', $error->getMessage());
             }
         }
-        
+
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
-    
+
     #[Route('/{id}/add-document', name: 'app_colis_add_document', methods: ['POST'])]
     public function addDocument(Request $request, Colis $coli, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
@@ -178,43 +191,43 @@ public function edit(Request $request, Colis $coli, EntityManagerInterface $enti
         $document->setColis($coli);
         $form = $this->createForm(DocumentSupportType::class, $document);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             // Gestion du téléchargement du document si nécessaire
             $docFile = $form->get('file')->getData();
-            
+
             if ($docFile) {
                 $originalFilename = pathinfo($docFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$docFile->guessExtension();
-                
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $docFile->guessExtension();
+
                 try {
                     $docFile->move(
                         $this->getParameter('documents_directory'),
                         $newFilename
                     );
-                    
+
                     $document->setCheminStockage($newFilename);
                 } catch (FileException $e) {
                     // Gestion de l'erreur
                     $this->addFlash('error', 'Une erreur est survenue lors du téléchargement du document.');
                 }
             }
-            
+
             $document->setDateUpload(new \DateTime());
             $entityManager->persist($document);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Le document a été ajouté avec succès.');
         } else {
             foreach ($form->getErrors(true) as $error) {
                 $this->addFlash('error', $error->getMessage());
             }
         }
-        
+
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
-    
+
     #[Route('/{id}/add-statut', name: 'app_colis_add_statut', methods: ['POST'])]
     public function addStatut(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
     {
@@ -222,19 +235,19 @@ public function edit(Request $request, Colis $coli, EntityManagerInterface $enti
         $statut->setColis($coli);
         $form = $this->createForm(StatutType::class, $statut);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $statut->setDateStatut(new \DateTime());
             $entityManager->persist($statut);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Le statut a été mis à jour avec succès.');
         } else {
             foreach ($form->getErrors(true) as $error) {
                 $this->addFlash('error', $error->getMessage());
             }
         }
-        
+
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
 
@@ -245,16 +258,16 @@ public function edit(Request $request, Colis $coli, EntityManagerInterface $enti
         $statut = new Statut();
         $statut->setColis($coli);
         $statut->setDateStatut(new \DateTime());
-        
+
         // Récupérer les données du formulaire
         $statutType = $request->request->get('statut_type'); // Récupère la valeur du champ 'statut_type'
         $localisation = $request->request->get('localisation'); // Récupère la valeur du champ 'localisation'
         $employeId = $request->request->get('employe_id'); // Récupère l'ID de l'employé si présent
-        
+
         // Définir le type de statut
         $statut->setTypeStatut(StatusType::from($statutType));
         $statut->setLocalisation($localisation);
-        
+
         // Si un employé est sélectionné, l'associer au statut
         if ($employeId) {
             $employe = $entityManager->getRepository(Employe::class)->find($employeId);
@@ -262,18 +275,18 @@ public function edit(Request $request, Colis $coli, EntityManagerInterface $enti
                 $statut->setEmploye($employe);
             }
         }
-        
+
         // Sauvegarder dans la base de données
         $entityManager->persist($statut);
         $entityManager->flush();
-        
+
         // Ajouter un message flash
         $this->addFlash('success', 'Le statut du colis a été mis à jour avec succès.');
-        
+
         // Rediriger vers la page de détail du colis
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
-    
+
     #[Route('/{id}/add-transport', name: 'app_colis_add_transport', methods: ['POST'])]
     public function addTransport(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
     {
@@ -281,19 +294,19 @@ public function edit(Request $request, Colis $coli, EntityManagerInterface $enti
         $transport->setColis($coli);
         $form = $this->createForm(ColisTransportType::class, $transport);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $transport->setDateAssociation(new \DateTime());
             $entityManager->persist($transport);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Le transport a été ajouté avec succès.');
         } else {
             foreach ($form->getErrors(true) as $error) {
                 $this->addFlash('error', $error->getMessage());
             }
         }
-        
+
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
 }

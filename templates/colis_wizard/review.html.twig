@@ -7,6 +7,12 @@
         Veuillez vérifier toutes les informations saisies avant de finaliser la création du colis. Si vous souhaitez modifier une section, cliquez sur le bouton d'édition correspondant.
     </p>
     
+    <!-- Info sur le code de tracking généré automatiquement -->
+    <div class="alert alert-info mb-4">
+        <i class="fas fa-barcode me-2"></i>
+        <strong>Code de suivi :</strong> Un code de suivi au format <strong>TAB-XXXXXX-YYYY</strong> (où XXXXXX est l'ID du colis et YYYY l'année en cours) sera généré automatiquement lors de l'enregistrement final.
+    </div>
+    
     <div class="accordion" id="reviewAccordion">
         <!-- Informations du colis -->
         <div class="accordion-item">
@@ -26,10 +32,6 @@
                     <div class="row">
                         <div class="col-md-6">
                             <table class="table table-sm">
-                                <tr>
-                                    <th>Code de suivi</th>
-                                    <td>{{ wizard_data.colis.codeTracking }}</td>
-                                </tr>
                                 <tr>
                                     <th>Dimensions</th>
                                     <td>{{ wizard_data.colis.dimensions }}</td>
@@ -68,6 +70,7 @@
                 </div>
             </div>
         </div>
+        
         
         <!-- Informations de l'expéditeur -->
         {% if wizard_data.expediteur is defined and wizard_data.expediteur|length > 0 %}

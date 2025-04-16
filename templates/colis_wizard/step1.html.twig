@@ -5,6 +5,7 @@
 {% block step_content %}
     <p class="text-muted mb-4">
         Veuillez saisir les informations de base concernant votre colis. Les champs marqués d'un * sont obligatoires.
+        <strong>Le code de suivi sera généré automatiquement lors de la sauvegarde.</strong>
     </p>
 
     {{ form_start(form, {'attr': {'id': 'wizard_form', 'class': 'needs-validation'}}) }}
@@ -12,11 +13,10 @@
             <div class="col-md-6">
                 <h5 class="border-bottom pb-2 mb-3">Caractéristiques principales</h5>
                 
-                <div class="mb-3">
-                    {{ form_label(form.codeTracking) }}
-                    {{ form_widget(form.codeTracking) }}
-                    {{ form_errors(form.codeTracking) }}
-                    <div class="form-text">Utilisé pour suivre votre colis tout au long du transport.</div>
+                <!-- Notification pour le code de tracking généré automatiquement -->
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Le code de suivi au format <strong>TAB-XXXXXX-YYYY</strong> sera généré automatiquement lors de l'enregistrement du colis.
                 </div>
                 
                 <div class="mb-3">
@@ -73,8 +73,6 @@
         
         <!-- Le bouton de soumission est dans le layout parent -->
     {{ form_end(form) }}
-
-
 {# Ajout de votre fichier JavaScript de wizard #}
 {% block javascripts %}
     {# JavaScript de base #}

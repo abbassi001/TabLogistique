@@ -28,7 +28,7 @@ class Expediteur
     #[ORM\Column(length: 100)]
     private ?string $pays = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $adresse_complete = null;
 
 

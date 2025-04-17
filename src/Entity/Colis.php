@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ColisRepository::class)]
 class Colis
@@ -21,14 +22,33 @@ class Colis
 
     #[ORM\Column(length: 255)]
     private ?string $dimensions = null;
+    
+    #[ORM\Column(type: Types::FLOAT, nullable: true,)]
+    #[Assert\Positive(message: "Doit être un nombre positif.")]
+
+    private ?float $longueur = null;
+    
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[Assert\Positive(message: "Doit être un nombre positif.")]
+    private ?float $largeur = null;
+    
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    #[Assert\Positive(message: "Doit être un nombre positif.")]
+    private ?float $hauteur = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: "Doit être un nombre positif.")]
     private ?float $poids = null;
+    
+    #[ORM\Column(type: Types::FLOAT, nullable: true)]
+    private ?float $volumeCbm = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: "Doit être un nombre positif.")]
     private ?float $valeur_declaree = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+
     private ?\DateTimeInterface $date_creation = null;
 
     #[ORM\Column(length: 255)]
@@ -40,6 +60,7 @@ class Colis
     #[ORM\Column(length: 255)]
     private ?string $classification_douaniere = null;
 
+    // Relations avec d'autres entités
     #[ORM\ManyToOne]
     private ?Expediteur $expediteur = null;
 
@@ -61,6 +82,7 @@ class Colis
     
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: ColisTransport::class, orphanRemoval: true)]
     private Collection $colisTransports;
+    
 
     public function __construct()
     {
@@ -89,6 +111,11 @@ class Colis
 
     public function getDimensions(): ?string
     {
+        // Si les dimensions individuelles sont définies, on peut les formatter
+        if ($this->longueur !== null && $this->largeur !== null && $this->hauteur !== null) {
+            return sprintf('%.2f cm x %.2f cm x %.2f cm', $this->longueur, $this->largeur, $this->hauteur);
+        }
+        
         return $this->dimensions;
     }
 
@@ -98,19 +125,64 @@ class Colis
 
         return $this;
     }
+    
+    public function getLongueur(): ?float
+    {
+        return $this->longueur;
+    }
+    
+    public function setLongueur(?float $longueur): static
+    {
+        $this->longueur = $longueur;
+        return $this;
+    }
+    
+    public function getLargeur(): ?float
+    {
+        return $this->largeur;
+    }
+    
+    public function setLargeur(?float $largeur): static
+    {
+        $this->largeur = $largeur;
+        return $this;
+    }
+    
+    public function getHauteur(): ?float
+    {
+        return $this->hauteur;
+    }
+    
+    public function setHauteur(?float $hauteur): static
+    {
+        $this->hauteur = $hauteur;
+        return $this;
+    }
+    
+    public function getVolumeCbm(): ?float
+    {
+        return $this->volumeCbm;
+    }
+    
+    public function setVolumeCbm(?float $volumeCbm): static
+    {
+        $this->volumeCbm = $volumeCbm;
+        return $this;
+    }
 
     public function getPoids(): ?float
     {
         return $this->poids;
     }
 
-    public function setPoids(float $poids): static
+    public function setPoids(?float $poids): static
     {
         $this->poids = $poids;
 
         return $this;
     }
 
+    // Autres getters et setters
     public function getValeurDeclaree(): ?float
     {
         return $this->valeur_declaree;
@@ -171,6 +243,7 @@ class Colis
         return $this;
     }
 
+    // Getters et setters pour les relations
     public function getExpediteur(): ?Expediteur
     {
         return $this->expediteur;

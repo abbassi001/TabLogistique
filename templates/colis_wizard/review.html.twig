@@ -29,12 +29,25 @@
                         </a>
                     </div>
                     
+                    <!-- Mise à jour du bloc pour les dimensions dans le template review.html.twig -->
                     <div class="row">
                         <div class="col-md-6">
                             <table class="table table-sm">
                                 <tr>
                                     <th>Dimensions</th>
                                     <td>{{ wizard_data.colis.dimensions }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Détails (L × l × h)</th>
+                                    <td>
+                                        {{ wizard_data.colis.longueur|number_format(2) }} × 
+                                        {{ wizard_data.colis.largeur|number_format(2) }} × 
+                                        {{ wizard_data.colis.hauteur|number_format(2) }} cm
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Volume</th>
+                                    <td>{{ wizard_data.colis.volumeCbm|number_format(6) }} m³</td>
                                 </tr>
                                 <tr>
                                     <th>Poids</th>
@@ -380,9 +393,9 @@
         <i class="fas fa-info-circle me-2"></i>
         Veuillez vérifier toutes les informations avant de finaliser la création du colis. Une fois enregistré, le colis sera immédiatement intégré au système de suivi.
     </div>
-{% endblock %}
+</div>
 
-{% block navigation_buttons %}
+ {% block navigation_buttons %}
     <a href="{{ path('app_colis_wizard_step7') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left me-2"></i>Précédent
     </a>
@@ -394,4 +407,16 @@
     <a href="{{ path('app_colis_wizard_save') }}" class="btn btn-success btn-lg">
         <i class="fas fa-save me-2"></i>Finaliser et enregistrer
     </a>
+{% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Code JavaScript pour gérer le comportement de l'accordéon
+        document.addEventListener('DOMContentLoaded', function () {
+            var myAccordion = document.getElementById('reviewAccordion');
+            var bsAccordion = new bootstrap.Accordion(myAccordion);
+        });
+    </script>
 {% endblock %}

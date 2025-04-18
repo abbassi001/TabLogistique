@@ -2,6 +2,11 @@
 
 {% block title %}Détails du Colis - TAB Logistique{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/modules/colis.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/print.css') }}" media="print">
+{% endblock %}
+
 {% block sidebar %}
 <nav class="col-md-2 d-none d-md-block sidebar">
     <div class="position-sticky pt-3">
@@ -728,160 +733,8 @@
     </div>
 {% endblock %}
 
+
 {% block javascripts %}
-{{ parent() }}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Fonction pour copier le code de tracking dans le presse-papier
-    window.copyToClipboard = function(text) {
-        navigator.clipboard.writeText(text).then(function() {
-            alert('Code de tracking copié dans le presse-papier : ' + text);
-        }, function(err) {
-            console.error('Erreur lors de la copie :', err);
-        });
-    };
-    
-    // Prévisualisation des photos
-    const photoInput = document.querySelector('#photo_form_file');
-    if (photoInput) {
-        photoInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const preview = document.getElementById('photo-preview');
-                const previewImg = document.getElementById('photo-preview-img');
-                const photoName = document.getElementById('photo-name');
-                const photoSize = document.getElementById('photo-size');
-                
-                // Afficher le conteneur de prévisualisation
-                preview.classList.remove('d-none');
-                
-                // Mettre à jour l'image et les informations
-                previewImg.src = URL.createObjectURL(file);
-                photoName.textContent = file.name;
-                photoSize.textContent = Math.round(file.size / 1024) + ' KB';
-                
-                // Libérer l'URL de l'objet lors du déchargement
-                previewImg.onload = function() {
-                    URL.revokeObjectURL(previewImg.src);
-                };
-            }
-        });
-    }
-    
-    // Prévisualisation des documents
-    const documentInput = document.querySelector('#document_form_file');
-    if (documentInput) {
-        documentInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const preview = document.getElementById('document-preview');
-                const documentIcon = document.getElementById('document-icon');
-                const documentName = document.getElementById('document-name');
-                const documentSize = document.getElementById('document-size');
-                
-                // Afficher le conteneur de prévisualisation
-                preview.classList.remove('d-none');
-                
-                // Mettre à jour les informations
-                documentName.textContent = file.name;
-                documentSize.textContent = Math.round(file.size / 1024) + ' KB';
-                
-                // Détecter l'extension du fichier
-                const extension = file.name.split('.').pop().toLowerCase();
-                let iconClass = 'fas fa-file text-secondary';
-                
-                if (extension === 'pdf') {
-                    iconClass = 'fas fa-file-pdf text-danger';
-                } else if (['doc', 'docx'].includes(extension)) {
-                    iconClass = 'fas fa-file-word text-primary';
-                } else if (['xls', 'xlsx', 'csv'].includes(extension)) {
-                    iconClass = 'fas fa-file-excel text-success';
-                }
-                
-                // Mettre à jour l'icône
-                documentIcon.className = iconClass + ' fa-3x mb-2';
-                
-                // Si le nom du document est vide, le remplir avec le nom du fichier sans extension
-                const nomFichierInput = document.querySelector('#document_form_nomFichier');
-                if (nomFichierInput && !nomFichierInput.value) {
-                    nomFichierInput.value = file.name.split('.').slice(0, -1).join('.');
-                }
-            }
-        });
-    }
-    
-    // Animation pour les cartes d'actions rapides
-    const actionCards = document.querySelectorAll('.hover-shadow');
-    actionCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.classList.add('shadow');
-            this.style.transform = 'translateY(-5px)';
-            this.style.transition = 'transform 0.3s ease';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.classList.remove('shadow');
-            this.style.transform = 'translateY(0)';
-        });
-    });
-    
-    // Validation des formulaires Bootstrap
-    const forms = document.querySelectorAll('.needs-validation');
-    Array.prototype.slice.call(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        });
-    });
-    
-    // Initialisation des onglets
-    const triggerTabList = [].slice.call(document.querySelectorAll('#myTab button'));
-    triggerTabList.forEach(function(triggerEl) {
-        const tabTrigger = new bootstrap.Tab(triggerEl);
-        
-        triggerEl.addEventListener('click', function(event) {
-            event.preventDefault();
-            tabTrigger.show();
-        });
-    });
-});
-</script>
-
-<style>
-/* Styles supplémentaires pour améliorer l'aspect visuel */
-.bg-light {
-    background-color: #f8f9fa !important;
-}
-
-.table th.bg-light {
-    font-weight: 500;
-    background-color: #f0f0f0 !important;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.nav-tabs .nav-link {
-    border: 1px solid transparent;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
-    padding: 0.75rem 1rem;
-    font-weight: 500;
-}
-
-.nav-tabs .nav-link.active {
-    color: #0d6efd;
-    background-color: #fff;
-    border-color: #dee2e6 #dee2e6 #fff;
-}
-
-.card {
-    transition: all 0.3s ease;
-}
-
-.hover-shadow:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-</style>
+    {{ parent() }}
+    <script src="{{ asset('js/modules/colis.js') }}"></script>
 {% endblock %}

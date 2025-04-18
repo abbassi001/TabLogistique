@@ -2,6 +2,14 @@
 
 {% block title %}Créer un colis - Étape 1{% endblock %}
 
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/wizard.css') }}">
+{% endblock %}
+
+{% block sidebar_class %}col-md-2{% endblock %}
+
 {% block sidebar %}
 <nav class="col-md-2 d-none d-md-block sidebar">
     <div class="position-sticky pt-3">
@@ -251,57 +259,6 @@
 {% endblock %}
 
 {% block javascripts %}
-{{ parent() }}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialiser le champ de date_creation avec la date actuelle
-    const dateField = document.querySelector('input[name="{{ form.date_creation.vars.full_name }}"]');
-    if (dateField) {
-                const now = new Date();
-                dateField.value = now.toISOString().slice(0, 16);
-
-    }
-
-    const longueurField = document.querySelector('[data-dimension="longueur"]');
-    const largeurField = document.querySelector('[data-dimension="largeur"]');
-    const hauteurField = document.querySelector('[data-dimension="hauteur"]');
-    const dimensionsDisplay = document.getElementById('dimensions-display');
-    const hiddenDimensionsField = document.querySelector('.hidden-dimensions-field');
-    
-    // Vérifier si tous les éléments nécessaires sont présents
-    if(!longueurField || !largeurField || !hauteurField) {
-        console.error('Certains champs de dimensions sont manquants');
-        return;
-    }
-    
-    // Fonction pour mettre à jour le champ dimensions
-    function updateDimensions() {
-        // Récupérer les valeurs avec une valeur par défaut de 0
-        const longueur = parseFloat(longueurField.value) || 0;
-        const largeur = parseFloat(largeurField.value) || 0;
-        const hauteur = parseFloat(hauteurField.value) || 0;
-        
-        // Mettre à jour l'affichage des dimensions au format L x l x h
-        const dimensionsText = `${longueur.toFixed(2)} cm x ${largeur.toFixed(2)} cm x ${hauteur.toFixed(2)} cm`;
-        
-        // Mettre à jour le champ d'affichage si présent
-        if(dimensionsDisplay) {
-            dimensionsDisplay.value = dimensionsText;
-        }
-        
-        // Mettre à jour le champ caché
-        if(hiddenDimensionsField) {
-            hiddenDimensionsField.value = dimensionsText;
-        }
-    }
-    
-    // Ajouter des écouteurs d'événements pour les champs de dimension
-    [longueurField, largeurField, hauteurField].forEach(field => {
-        field.addEventListener('input', updateDimensions);
-    });
-    
-    // Initialiser les dimensions au chargement de la page
-    updateDimensions();
-});
-</script>
+    {{ parent() }}
+    <script src="{{ asset('js/modules/wizard.js') }}"></script>
 {% endblock %}

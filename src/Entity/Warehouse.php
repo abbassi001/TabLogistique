@@ -3,7 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\WarehouseRepository;
-use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: WarehouseRepository::class)]
@@ -15,16 +16,23 @@ class Warehouse
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $code_ut = null;
+    private ?string $codeUt = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $adresse_warehouse = null;
+    private ?string $adresseWarehouse = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
-
-    #[ORM\Column(length: 255 , nullable: true)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $nomEntreprise = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $ville = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $pays = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $codePostal = null;
+
 
     public function getId(): ?int
     {
@@ -33,37 +41,23 @@ class Warehouse
 
     public function getCodeUt(): ?string
     {
-        return $this->code_ut;
+        return $this->codeUt;
     }
 
-    public function setCodeUt(string $code_ut): static
+    public function setCodeUt(string $codeUt): self
     {
-        $this->code_ut = $code_ut;
-
+        $this->codeUt = $codeUt;
         return $this;
     }
 
     public function getAdresseWarehouse(): ?string
     {
-        return $this->adresse_warehouse;
+        return $this->adresseWarehouse;
     }
 
-    public function setAdresseWarehouse(string $adresse_warehouse): static
+    public function setAdresseWarehouse(string $adresseWarehouse): self
     {
-        $this->adresse_warehouse = $adresse_warehouse;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
+        $this->adresseWarehouse = $adresseWarehouse;
         return $this;
     }
 
@@ -72,10 +66,52 @@ class Warehouse
         return $this->nomEntreprise;
     }
 
-    public function setNomEntreprise(string $nomEntreprise): static
+    public function setNomEntreprise(?string $nomEntreprise): self
     {
         $this->nomEntreprise = $nomEntreprise;
-
         return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?string $ville): self
+    {
+        $this->ville = $ville;
+        return $this;
+    }
+
+    public function getPays(): ?string
+    {
+        return $this->pays;
+    }
+
+    public function setPays(?string $pays): self
+    {
+        $this->pays = $pays;
+        return $this;
+    }
+
+    public function getCodePostal(): ?string
+    {
+        return $this->codePostal;
+    }
+
+    public function setCodePostal(?string $codePostal): self
+    {
+        $this->codePostal = $codePostal;
+        return $this;
+    }
+
+    // Méthode pour une représentation en chaîne
+    public function __toString(): string
+    {
+        $representation = $this->codeUt . ' - ' . $this->adresseWarehouse;
+        if ($this->nomEntreprise) {
+            $representation .= ' (' . $this->nomEntreprise . ')';
+        }
+        return $representation;
     }
 }

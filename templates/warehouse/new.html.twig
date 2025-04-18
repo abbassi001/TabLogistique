@@ -5,7 +5,10 @@
 {% block body %}
     <h1>Create new Warehouse</h1>
 
-    {{ include('warehouse/_form.html.twig') }}
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary">Save</button>
+    {{ form_end(form) }}
 
-    <a href="{{ path('app_warehouse_index') }}">back to list</a>
+    <a href="{{ path('app_warehouse_index') }}" class="btn btn-secondary mt-2">Back to list</a>
 {% endblock %}

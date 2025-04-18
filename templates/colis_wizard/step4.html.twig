@@ -122,22 +122,22 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    {{ form_label(form.type_statut) }}
+                                    {{ form_label(form.typeStatut) }}
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="fas fa-tag"></i></span>
-                                        {{ form_widget(form.type_statut, {'attr': {'class': 'form-select'}}) }}
+                                        {{ form_widget(form.typeStatut, {'attr': {'class': 'form-select'}}) }}
                                     </div>
-                                    {{ form_errors(form.type_statut) }}
+                                    {{ form_errors(form.typeStatut) }}
                                     <div class="form-text">État actuel du colis dans le processus d'acheminement.</div>
                                 </div>
                                 
                                 <div class="mb-0">
-                                    {{ form_label(form.date_statut) }}
+                                    {{ form_label(form.dateStatut) }}
                                     <div class="input-group">
                                         <span class="input-group-text bg-light"><i class="fas fa-calendar-alt"></i></span>
-                                        {{ form_widget(form.date_statut, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_widget(form.dateStatut, {'attr': {'class': 'form-control'}}) }}
                                     </div>
-                                    {{ form_errors(form.date_statut) }}
+                                    {{ form_errors(form.dateStatut) }}
                                     <div class="form-text">Date à laquelle ce statut a été appliqué.</div>
                                 </div>
                             </div>
@@ -151,6 +151,19 @@
                                 <h6 class="mb-0"><i class="fas fa-map-pin me-2 text-primary"></i>Localisation et traitement</h6>
                             </div>
                             <div class="card-body">
+                                <!-- Si le sélecteur d'entrepôt est activé -->
+                                {% if form.warehouse is defined %}
+                                <div class="mb-3">
+                                    {{ form_label(form.warehouse) }}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-warehouse"></i></span>
+                                        {{ form_widget(form.warehouse, {'attr': {'class': 'form-select'}}) }}
+                                    </div>
+                                    {{ form_errors(form.warehouse) }}
+                                    <div class="form-text">Sélectionnez l'entrepôt où se trouve actuellement le colis.</div>
+                                </div>
+                                {% endif %}
+                                
                                 <div class="mb-3">
                                     {{ form_label(form.localisation) }}
                                     <div class="input-group">
@@ -230,20 +243,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialisation de date picker si nécessaire
-    const datePicker = document.querySelector('input[type="date"]');
-    if (datePicker) {
-        // Si vous utilisez un plugin de date picker, vous pouvez l'initialiser ici
+    // Gestion du sélecteur d'entrepôt
+    const warehouseSelector = document.querySelector('.warehouse-selector');
+    const localisationInput = document.querySelector('#statut_localisation');
+    
+    if (warehouseSelector && localisationInput) {
+        warehouseSelector.addEventListener('change', function() {
+            if (warehouseSelector.value) {
+                const selectedOption = warehouseSelector.options[warehouseSelector.selectedIndex];
+                localisationInput.value = "Entrepôt: " + selectedOption.text;
+            } else {
+                localisationInput.value = '';
+            }
+        });
+        
+        // Déclencher l'événement au chargement si une valeur est déjà sélectionnée
+        if (warehouseSelector.selectedIndex > 0) {
+            warehouseSelector.dispatchEvent(new Event('change'));
+        }
     }
 });
-</script>
-{% endblock %}
-
-{% block page_scripts %}
-<script>
-    // Code JavaScript spécifique à cette page
-    document.addEventListener('DOMContentLoaded', function() {
-        // Vous pouvez ajouter du code spécifique à cette étape ici
-    });
 </script>
 {% endblock %}

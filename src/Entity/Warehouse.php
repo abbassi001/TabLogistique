@@ -18,10 +18,13 @@ class Warehouse
     private ?string $code_ut = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $localisation_warehouse = null;
+    private ?string $adresse_warehouse = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
+
+    #[ORM\Column(length: 255 , nullable: true)]
+    private ?string $nomEntreprise = null;
 
     public function getId(): ?int
     {
@@ -40,14 +43,14 @@ class Warehouse
         return $this;
     }
 
-    public function getLocalisationWarehouse(): ?string
+    public function getAdresseWarehouse(): ?string
     {
-        return $this->localisation_warehouse;
+        return $this->adresse_warehouse;
     }
 
-    public function setLocalisationWarehouse(string $localisation_warehouse): static
+    public function setAdresseWarehouse(string $adresse_warehouse): static
     {
-        $this->localisation_warehouse = $localisation_warehouse;
+        $this->adresse_warehouse = $adresse_warehouse;
 
         return $this;
     }
@@ -60,6 +63,18 @@ class Warehouse
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getNomEntreprise(): ?string
+    {
+        return $this->nomEntreprise;
+    }
+
+    public function setNomEntreprise(string $nomEntreprise): static
+    {
+        $this->nomEntreprise = $nomEntreprise;
 
         return $this;
     }

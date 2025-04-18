@@ -12,6 +12,7 @@
                 <th>Id_status</th>
                 <th>Date_status</th>
                 <th>Localisation</th>
+                <th>Employé</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                 <td>{{ statut.idStatus }}</td>
                 <td>{{ statut.dateStatus ? statut.dateStatus|date('Y-m-d H:i:s') : '' }}</td>
                 <td>{{ statut.localisation }}</td>
+                <td>{% if statut.employe %}{{ statut.employe.prenom }} {{ statut.employe.nom }}{% else %}Non assigné{% endif %}</td>
                 <td>
                     <a href="{{ path('app_statut_show', {'id': statut.id}) }}">show</a>
                     <a href="{{ path('app_statut_edit', {'id': statut.id}) }}">edit</a>
@@ -29,7 +31,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="6">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -8,6 +8,11 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Employe>
+ *
+ * @method Employe|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Employe|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Employe[]    findAll()
+ * @method Employe[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class EmployeRepository extends ServiceEntityRepository
 {
@@ -16,28 +21,25 @@ class EmployeRepository extends ServiceEntityRepository
         parent::__construct($registry, Employe::class);
     }
 
-//    /**
-//     * @return Employe[] Returns an array of Employe objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Employe
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Trouve un employé par son adresse email
+     */
+    public function findOneByEmail(string $email): ?Employe
+    {
+        return $this->findOneBy(['email' => $email]);
+    }
+    
+    /**
+     * Trouve un employé associé à un utilisateur (soit par relation directe, soit par email)
+     */
+    public function findOneByUser($user): ?Employe
+    {
+        // Si l'utilisateur a déjà un employé associé
+        if (method_exists($user, 'getEmploye') && $user->getEmploye()) {
+            return $user->getEmploye();
+        }
+        
+        // Sinon, on cherche par email
+        return $this->findOneByEmail($user->getEmail());
+    }
 }

@@ -65,7 +65,6 @@ class Colis
     private ?Expediteur $expediteur = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Destinataire $destinataire = null;
 
     #[ORM\ManyToOne]
@@ -82,7 +81,6 @@ class Colis
     
     #[ORM\OneToMany(mappedBy: 'colis', targetEntity: ColisTransport::class, orphanRemoval: true)]
     private Collection $colisTransports;
-    
 
     public function __construct()
     {

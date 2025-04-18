@@ -23,6 +23,10 @@
                 <th>Localisation</th>
                 <td>{{ statut.localisation }}</td>
             </tr>
+            <tr>
+                <th>Employé responsable</th>
+                <td>{% if statut.employe %}{{ statut.employe.prenom }} {{ statut.employe.nom }}{% else %}Non assigné{% endif %}</td>
+            </tr>
         </tbody>
     </table>
 

@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Entity\Colis;
 
 #[Route('/destinataire')]
 #[IsGranted('ROLE_USER')]
@@ -44,10 +45,21 @@ final class DestinataireController extends AbstractController{
     }
 
     #[Route('/{id}', name: 'app_destinataire_show', methods: ['GET'])]
-    public function show(Destinataire $destinataire): Response
+    public function show(Destinataire $destinataire, EntityManagerInterface $entityManager): Response
     {
+        // Charger explicitement les colis
+        $colisDestinataire = $entityManager->getRepository(Colis::class)->findBy([
+            'destinataire' => $destinataire
+        ]);
+    
+        $colisExpediteur = $entityManager->getRepository(Colis::class)->findBy([
+            'expediteur' => $destinataire
+        ]);
+    
         return $this->render('destinataire/show.html.twig', [
             'destinataire' => $destinataire,
+            'colis_destinataire' => $colisDestinataire,
+            'colis_expediteur' => $colisExpediteur
         ]);
     }
 

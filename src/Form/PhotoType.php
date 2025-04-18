@@ -21,7 +21,7 @@ class PhotoType extends AbstractType
     {
         $builder
             ->add('file', FileType::class, [
-                'label' => 'Image (JPG, PNG)',
+                'label' => 'Image (JPG, PNG,JPEG, GIF,max 5Mo)',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
@@ -30,15 +30,13 @@ class PhotoType extends AbstractType
                         'mimeTypes' => [
                             'image/jpeg',
                             'image/png',
+                            'image/jpg',
+                            'image/gif'
+
                         ],
-                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPG, PNG)',
+                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPG, PNG, JPEG, GIF)',
                     ])
                 ],
-            ])
-            ->add('urlPhoto', TextType::class, [
-                'label' => 'URL de l\'image (si pas d\'upload)',
-                'required' => false,
-                'attr' => ['placeholder' => 'URL de l\'image']
             ])
             ->add('description', TextareaType::class, [
                 'required' => false,

@@ -6,14 +6,24 @@ use App\Entity\Transport;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class TransportType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('type_transport')
-            ->add('compagnie_transport')
+        ->add('type_transport', ChoiceType::class, [
+            'choices' => [
+                'Camion' => 'CAMION',
+                'Avion' => 'AVION',
+                'Bateau' => 'BATEAU',
+                'Train' => 'TRAIN',
+                'Autre' => 'AUTRE'
+            ],
+            'label' => 'Type de transport'
+        ])
+            ->add(child: 'compagnie_transport')
             ->add('numero_vol_navire')
             ->add('date_depart', null, [
                 'widget' => 'single_text'

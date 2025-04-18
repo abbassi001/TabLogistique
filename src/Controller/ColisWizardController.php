@@ -28,6 +28,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Repository\EmployeRepository;
 
 #[Route('/colis-wizard')]
 #[IsGranted('ROLE_USER')] // Ajoutez cette ligne
@@ -274,72 +275,88 @@ final class ColisWizardController extends AbstractController
         ]);
     }
 
-
+    // <?php
     #[Route('/step4', name: 'app_colis_wizard_step4', methods: ['GET', 'POST'])]
-    public function step4(Request $request, SessionInterface $session): Response
+    public function step4(Request $request, SessionInterface $session, EmployeRepository $employeRepository): Response
     {
-        // Vérifier que l'étape précédente a été complétée
+        // Get wizard data from session
         $wizardData = $this->getWizardData($session);
+    
+        // Check if previous steps are completed
         if (empty($wizardData['destinataire'])) {
+            $this->addFlash('error', 'Veuillez d\'abord remplir les informations du destinataire.');
             return $this->redirectToRoute('app_colis_wizard_step3');
         }
-
-        // Informations sur le statut initial
+    
         $statut = new Statut();
-        $statut->setTypeStatut(StatusType::RECU);
+        // Définir une date par défaut (aujourd'hui)
         $statut->setDateStatut(new \DateTime());
-
-        // Pré-remplir le formulaire si des données existent déjà
-        if (!empty($wizardData['statut'])) {
-            $formData = $wizardData['statut'];
-            if (isset($formData['type_statut'])) $statut->setTypeStatut(StatusType::from($formData['type_statut']));
-            if (isset($formData['date_statut'])) $statut->setDateStatut(new \DateTime($formData['date_statut']));
-            if (isset($formData['localisation'])) $statut->setLocalisation($formData['localisation']);
-            // Gérer l'employé si nécessaire
-            if (isset($formData['employe_id']) && $formData['employe_id']) {
-                $employe = $this->entityManager->getRepository(Employe::class)->find($formData['employe_id']);
-                if ($employe) {
-                    $statut->setEmploye($employe);
-                }
+        
+        // Définir le type de statut par défaut (ex: "Reçu")
+        $statut->setTypeStatut(StatusType::RECU);
+    
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+    
+        // Trouver l'employé associé à l'utilisateur connecté
+        $employe = null;
+        if ($user instanceof \App\Entity\User) {
+            // Si l'utilisateur a une relation directe avec un employé
+            if (method_exists($user, 'getEmploye')) {
+                $employe = $user->getEmploye();
             }
-        } else {
-            // Valeurs par défaut
-            $statut->setLocalisation('Réception entrepôt');
+            
+            // Si pas de relation directe, chercher par email
+            if (!$employe) {
+                $employe = $employeRepository->findOneByEmail($user->getEmail());
+            }
         }
-
-        // Création du formulaire avec l'option wizard_mode à true
-        $form = $this->createForm(StatutType::class, $statut, [
-            'wizard_mode' => true,
-        ]);
-
+    
+        // Attacher l'employé au statut
+        if ($employe) {
+            $statut->setEmploye($employe);
+            // Masquer complètement le champ employe
+            $formOptions = ['wizard_mode' => true, 'hide_employe' => true];
+        } else {
+            // Si pas d'employé trouvé, le champ sera affiché
+            $formOptions = ['wizard_mode' => true];
+            $this->addFlash('warning', 'Votre compte utilisateur n\'est pas associé à un employé. Veuillez contacter un administrateur.');
+        }
+    
+        $form = $this->createForm(StatutType::class, $statut, $formOptions);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            // Stocker les données du formulaire en session
+            // S'assurer que l'employé est toujours associé (au cas où)
+            if ($employe && !$statut->getEmploye()) {
+                $statut->setEmploye($employe);
+            }
+            
+            // Stocker les données du statut en session
             $wizardData['statut'] = [
                 'type_statut' => $statut->getTypeStatut()->value,
                 'date_statut' => $statut->getDateStatut()->format('Y-m-d H:i:s'),
                 'localisation' => $statut->getLocalisation(),
                 'employe_id' => $statut->getEmploye() ? $statut->getEmploye()->getId() : null
             ];
-
+    
             $wizardData['current_step'] = 5;
             if ($wizardData['max_step'] < 5) {
                 $wizardData['max_step'] = 5;
             }
-
+    
             $session->set(self::SESSION_KEY, $wizardData);
-
+    
             return $this->redirectToRoute('app_colis_wizard_step5');
         }
-
+    
         return $this->render('colis_wizard/step4.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
+            'employe' => $employe, // Passer l'employé au template
             'current_step' => 4,
             'max_step' => $wizardData['max_step']
         ]);
     }
-
     #[Route('/step5', name: 'app_colis_wizard_step5', methods: ['GET', 'POST'])]
     public function step5(Request $request, SessionInterface $session): Response
     {
@@ -683,25 +700,25 @@ final class ColisWizardController extends AbstractController
 
     // Modifier la méthode save pour prendre en compte l'édition
     #[Route('/save', name: 'app_colis_wizard_save', methods: ['GET'])]
-    public function save(EntityManagerInterface $entityManager, SessionInterface $session): Response
+    public function save(EntityManagerInterface $entityManager, SessionInterface $session, EmployeRepository $employeRepository): Response
     {
         $wizardData = $this->getWizardData($session);
-        
+
         // Vérifier que les données essentielles sont présentes
         if (empty($wizardData['colis']) || empty($wizardData['destinataire'])) {
             $this->addFlash('error', 'Des informations essentielles sont manquantes.');
             return $this->redirectToRoute('app_colis_wizard_start');
         }
-        
+
         try {
             // Déterminer s'il s'agit d'une création ou d'une édition
             $isEdit = isset($wizardData['is_edit']) && $wizardData['is_edit'] === true;
             $colis = null;
-            
+
             if ($isEdit && isset($wizardData['colis_id'])) {
                 // Mode édition: récupérer le colis existant
                 $colis = $entityManager->getRepository(Colis::class)->find($wizardData['colis_id']);
-                
+
                 if (!$colis) {
                     throw new \Exception('Colis non trouvé pour l\'édition');
                 }
@@ -709,7 +726,7 @@ final class ColisWizardController extends AbstractController
                 // Mode création: créer un nouveau colis
                 $colis = new Colis();
             }
-            
+
             // 1. Créer ou récupérer l'expéditeur
             $expediteur = null;
             if (!empty($wizardData['expediteur'])) {
@@ -720,7 +737,7 @@ final class ColisWizardController extends AbstractController
                     // Création d'un nouvel expéditeur
                     $expediteur = new Expediteur();
                 }
-                
+
                 $expediteur->setNomEntrepriseIndividu($wizardData['expediteur']['nom_entreprise_individu']);
                 $expediteur->setTelephone($wizardData['expediteur']['telephone']);
                 $expediteur->setEmail($wizardData['expediteur']['email']);
@@ -728,7 +745,7 @@ final class ColisWizardController extends AbstractController
                 $expediteur->setAdresseComplete($wizardData['expediteur']['adresse_complete']);
                 $entityManager->persist($expediteur);
             }
-            
+
             // 2. Créer ou mettre à jour le destinataire
             $destinataire = null;
             if ($isEdit && $colis->getDestinataire()) {
@@ -738,18 +755,18 @@ final class ColisWizardController extends AbstractController
                 // Création d'un nouveau destinataire
                 $destinataire = new Destinataire();
             }
-            
+
             $destinataire->setNomEntrepriseIndividu($wizardData['destinataire']['nom_entreprise_individu']);
             $destinataire->setTelephone($wizardData['destinataire']['telephone']);
             $destinataire->setEmail($wizardData['destinataire']['email']);
             $destinataire->setPays($wizardData['destinataire']['pays']);
             $destinataire->setAdresseComplete($wizardData['destinataire']['adresse_complete']);
             $entityManager->persist($destinataire);
-            
+
             // 3. Mettre à jour le colis
             // Mettre à jour les dimensions
             $colis->setDimensions($wizardData['colis']['dimensions']);
-            
+
             // Mettre à jour les dimensions individuelles
             if (isset($wizardData['colis']['longueur'])) {
                 $colis->setLongueur((float)$wizardData['colis']['longueur']);
@@ -760,25 +777,25 @@ final class ColisWizardController extends AbstractController
             if (isset($wizardData['colis']['hauteur'])) {
                 $colis->setHauteur((float)$wizardData['colis']['hauteur']);
             }
-            
+
             // Poids saisi manuellement
             if (isset($wizardData['colis']['poids'])) {
                 $colis->setPoids((float)$wizardData['colis']['poids']);
             }
-            
+
             $colis->setValeurDeclaree((float)$wizardData['colis']['valeur_declaree']);
             $colis->setDateCreation(new \DateTime($wizardData['colis']['date_creation']));
             $colis->setNatureMarchandise($wizardData['colis']['nature_marchandise']);
             $colis->setDescriptionMarchandise($wizardData['colis']['description_marchandise']);
             $colis->setClassificationDouaniere($wizardData['colis']['classification_douaniere']);
-            
+
             $colis->setExpediteur($expediteur);
             $colis->setDestinataire($destinataire);
-            
+
             // Persistez le colis pour qu'il ait un ID
             $entityManager->persist($colis);
             $entityManager->flush();
-            
+
             // Générer le code de tracking automatiquement après avoir obtenu l'ID
             if (!$isEdit || $colis->getCodeTracking() === null) {
                 $currentYear = (new \DateTime())->format('Y');
@@ -786,13 +803,36 @@ final class ColisWizardController extends AbstractController
                 $colis->setCodeTracking($codeTracking);
                 $entityManager->persist($colis);
             }
-            
+
             // En mode édition, on gère différemment les relations (statuts, photos, etc.)
             if ($isEdit) {
                 // Message spécifique
                 $this->addFlash('success', 'Le colis a été modifié avec succès !');
             } else {
                 // Code existant pour la création
+
+
+                // 4. Créer le statut initial
+                // if (!empty($wizardData['statut'])) {
+                //     $statut = new Statut();
+                //     $statut->setTypeStatut(StatusType::from($wizardData['statut']['type_statut']));
+                //     $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
+                //     $statut->setLocalisation($wizardData['statut']['localisation']);
+                //     $statut->setColis($colis); // Associer le statut au nouveau colis
+
+                //     // Gérer l'employé si nécessaire
+                //     if (isset($wizardData['statut']['employe_id']) && $wizardData['statut']['employe_id']) {
+                //         $employe = $entityManager->getRepository(Employe::class)->find($wizardData['statut']['employe_id']);
+                //         if ($employe) {
+                //             $statut->setEmploye($employe);
+                //         }
+                //     }
+
+                //     $entityManager->persist($statut);
+                // }
+
+                // Dans la méthode save, modifiez la section de création du statut:
+
                 // 4. Créer le statut initial
                 if (!empty($wizardData['statut'])) {
                     $statut = new Statut();
@@ -800,18 +840,29 @@ final class ColisWizardController extends AbstractController
                     $statut->setDateStatut(new \DateTime($wizardData['statut']['date_statut']));
                     $statut->setLocalisation($wizardData['statut']['localisation']);
                     $statut->setColis($colis); // Associer le statut au nouveau colis
-                    
-                    // Gérer l'employé si nécessaire
+
+                    // Récupérer l'employé depuis les données du wizard
                     if (isset($wizardData['statut']['employe_id']) && $wizardData['statut']['employe_id']) {
                         $employe = $entityManager->getRepository(Employe::class)->find($wizardData['statut']['employe_id']);
                         if ($employe) {
                             $statut->setEmploye($employe);
                         }
+                    } else {
+                        // Si pas d'employé dans le wizard, utiliser l'utilisateur connecté
+                        $user = $this->getUser();
+                        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmploye') && $user->getEmploye()) {
+                            $statut->setEmploye($user->getEmploye());
+                        } else if ($user instanceof \App\Entity\User) {
+                            $employe = $employeRepository->findOneByEmail($user->getEmail());
+                            if ($employe) {
+                                $statut->setEmploye($employe);
+                            }
+                        }
                     }
-                    
+
                     $entityManager->persist($statut);
                 }
-                
+
                 // 5. Créer le transport et l'association avec le colis
                 if (!empty($wizardData['transport'])) {
                     $transport = new Transport();
@@ -826,18 +877,18 @@ final class ColisWizardController extends AbstractController
                         $transport->setDateArrivee(new \DateTime($wizardData['transport']['date_arrivee']));
                     }
                     $transport->setLieuArrivee($wizardData['transport']['lieu_arrivee']);
-                    
+
                     $entityManager->persist($transport);
-                    
+
                     // Association Colis-Transport
                     $colisTransport = new ColisTransport();
                     $colisTransport->setColis($colis);
                     $colisTransport->setTransport($transport);
                     $colisTransport->setDateAssociation(new \DateTime());
-                    
+
                     $entityManager->persist($colisTransport);
                 }
-                
+
                 // 6. Ajouter les photos
                 if (!empty($wizardData['photos'])) {
                     foreach ($wizardData['photos'] as $photoData) {
@@ -848,11 +899,11 @@ final class ColisWizardController extends AbstractController
                             $photo->setDescription($photoData['description']);
                         }
                         $photo->setColis($colis);
-                        
+
                         $entityManager->persist($photo);
                     }
                 }
-                
+
                 // 7. Ajouter les documents
                 if (!empty($wizardData['documents'])) {
                     foreach ($wizardData['documents'] as $documentData) {
@@ -862,24 +913,23 @@ final class ColisWizardController extends AbstractController
                         $document->setDateUpload(new \DateTime($documentData['dateUpload']));
                         $document->setCheminStockage($documentData['cheminStockage']);
                         $document->setColis($colis);
-                        
+
                         $entityManager->persist($document);
                     }
                 }
-                
+
                 // Message pour mode création
                 $this->addFlash('success', 'Le colis a été créé avec succès !');
             }
-            
+
             // Enregistrer tout en base de données
             $entityManager->flush();
-            
+
             // Nettoyer la session
             $session->remove(self::SESSION_KEY);
-            
+
             // Rediriger vers la page de détail du colis
             return $this->redirectToRoute('app_colis_show', ['id' => $colis->getId()]);
-            
         } catch (\Exception $e) {
             $this->addFlash('error', 'Une erreur est survenue lors de l\'enregistrement : ' . $e->getMessage());
             return $this->redirectToRoute('app_colis_wizard_review');

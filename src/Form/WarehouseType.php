@@ -9,14 +9,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class WarehouseType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('code_ut')
-            ->add('localisation_warehouse')
-            ->add('description')
-        ;
-    }
+// In WarehouseType.php
+public function buildForm(FormBuilderInterface $builder, array $options): void
+{
+    $builder
+        ->add('nomEntreprise')  // Change 'nom' to 'nom_entreprise'
+        ->add('code_ut')
+        ->add('adresse_warehouse')
+        ->add('description')
+    ;
+}
 
     public function configureOptions(OptionsResolver $resolver): void
     {

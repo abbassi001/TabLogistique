@@ -244,28 +244,41 @@ final class ColisController extends AbstractController
             $this->addFlash('success', 'Le statut a été mis à jour avec succès.');
         } else {
             foreach ($form->getErrors(true) as $error) {
-                $this->addFlash('error', $error->getMessage());
+                $this->addFlash('error', message: $error->getMessage());
             }
         }
 
         return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
     }
 
+    
     #[Route('/{id}/update-statut', name: 'app_colis_update_statut', methods: ['POST'])]
-    public function updateStatut(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
-    {
-        // Créer un nouveau statut
-        $statut = new Statut();
-        $statut->setColis($coli);
-        $statut->setDateStatut(new \DateTime());
+public function updateStatut(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
+{
+    // Créer un nouveau statut
+    $statut = new Statut();
+    $statut->setColis($coli);
+    $statut->setDateStatut(new \DateTime());
 
-        // Récupérer les données du formulaire
-        $statutType = $request->request->get('statut_type'); // Récupère la valeur du champ 'statut_type'
-        $localisation = $request->request->get('localisation'); // Récupère la valeur du champ 'localisation'
-        $employeId = $request->request->get('employe_id'); // Récupère l'ID de l'employé si présent
+    // Récupérer les données du formulaire
+    $statutType = $request->request->get('statut_type');
+    $localisation = $request->request->get('localisation');
+    $employeId = $request->request->get('employe_id');
 
-        // Définir le type de statut
-        $statut->setTypeStatut(StatusType::from($statutType));
+    try {
+        // Vérifier et convertir manuellement le type de statut
+        $enumStatutType = match($statutType) {
+            'EN_ATTENTE' => StatusType::EN_ATTENTE,
+            'RECU' => StatusType::RECU,
+            'EN_TRANSIT' => StatusType::EN_TRANSIT,
+            'EN_LIVRAISON' => StatusType::EN_LIVRAISON,
+            'LIVRE' => StatusType::LIVRE,
+            'RETOURNE' => StatusType::RETOURNE,
+            'BLOQUE_DOUANE' => StatusType::BLOQUE_DOUANE,
+            default => throw new \InvalidArgumentException('Type de statut invalide: ' . $statutType)
+        };
+
+        $statut->setTypeStatut($enumStatutType);
         $statut->setLocalisation($localisation);
 
         // Si un employé est sélectionné, l'associer au statut
@@ -276,17 +289,24 @@ final class ColisController extends AbstractController
             }
         }
 
+        // Récupérer l'utilisateur connecté si possible
+        $user = $this->getUser();
+        if ($user instanceof \App\Entity\User && method_exists($user, 'getEmploye') && $user->getEmploye()) {
+            $statut->setEmploye($user->getEmploye());
+        }
+
         // Sauvegarder dans la base de données
         $entityManager->persist($statut);
         $entityManager->flush();
 
-        // Ajouter un message flash
         $this->addFlash('success', 'Le statut du colis a été mis à jour avec succès.');
-
-        // Rediriger vers la page de détail du colis
-        return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Erreur lors de la mise à jour du statut : ' . $e->getMessage());
     }
 
+    // Rediriger vers la page de détail du colis
+    return $this->redirectToRoute('app_colis_show', ['id' => $coli->getId()]);
+}
     #[Route('/{id}/add-transport', name: 'app_colis_add_transport', methods: ['POST'])]
     public function addTransport(Request $request, Colis $coli, EntityManagerInterface $entityManager): Response
     {

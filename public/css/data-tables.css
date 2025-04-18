@@ -1,0 +1,234 @@
+/* data-tables.css */
+
+/* Conteneur de table amélioré */
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  
+  .table-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .table-title {
+    margin: 0;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+  }
+  
+  .table-title i {
+    margin-right: 10px;
+    color: #0d6efd;
+  }
+  
+  .table-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .table-body {
+    overflow-x: auto;
+  }
+  
+  .table-advanced {
+    width: 100%;
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+  
+  .table-advanced th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    padding: 15px;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+    white-space: nowrap;
+  }
+  
+  .table-advanced tbody tr {
+    transition: all 0.2s;
+  }
+  
+  .table-advanced tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+  }
+  
+  .table-advanced td {
+    padding: 15px;
+    vertical-align: middle;
+    border-top: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .table-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e9ecef;
+    background-color: #f8f9fa;
+  }
+  
+  .table-info {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  
+  /* Cell avec données enrichies */
+  .cell-user {
+    display: flex;
+    align-items: center;
+  }
+  
+  .cell-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin-right: 10px;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #495057;
+    flex-shrink: 0;
+  }
+  
+  .cell-user-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .cell-user-name {
+    font-weight: 500;
+  }
+  
+  .cell-user-email {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+  
+  /* Cell avec statut */
+  .cell-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .cell-status i {
+    margin-right: 5px;
+  }
+  
+  .status-active {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: #198754;
+  }
+  
+  .status-pending {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+  }
+  
+  .status-blocked {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+  }
+  
+  .status-info {
+    background-color: rgba(13, 202, 240, 0.1);
+    color: #0dcaf0;
+  }
+  
+  /* Cell avec actions */
+  .cell-actions {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s;
+  }
+  
+  .action-btn:hover {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+  }
+  
+  .action-btn-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .action-btn-success:hover {
+    background-color: #198754;
+    border-color: #198754;
+  }
+  
+  /* Pagination améliorée */
+  .pagination-advanced {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .pagination-advanced .page-item .page-link {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    background-color: white;
+    transition: all 0.2s;
+  }
+  
+  .pagination-advanced .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+  }
+  
+  .pagination-advanced .page-item .page-link:hover {
+    background-color: #e9ecef;
+    color: #0d6efd;
+  }
+  
+  .pagination-advanced .page-item.active .page-link:hover {
+    background-color: #0b5ed7;
+    color: white;
+  }
+  
+  .pagination-advanced .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #f8f9fa;
+    pointer-events: none;
+  }

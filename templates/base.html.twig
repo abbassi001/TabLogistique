@@ -21,6 +21,22 @@
         
         {# Module specific CSS #}
         {% block module_stylesheets %}{% endblock %}
+
+           <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/print.css') }}" media="print">
+    <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/notifications.css') }}">
+    <!-- Modules CSS conditionnels -->
+    {% if app.request.attributes.get('_route') starts with 'app_admin_' %}
+        <link rel="stylesheet" href="{{ asset('css/modules/admin-user.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/modules/admin-forms.css') }}">
+    {% endif %}
+    {% if app.request.attributes.get('_route') starts with 'app_colis_' %}
+        <link rel="stylesheet" href="{{ asset('css/modules/colis.css') }}">
+    {% endif %}
+    {% if app.request.attributes.get('_route') starts with 'app_colis_wizard_' %}
+        <link rel="stylesheet" href="{{ asset('css/modules/wizard.css') }}">
+    {% endif %}
         
         {# Page specific CSS #}
         {% block stylesheets %}{% endblock %}
@@ -150,6 +166,15 @@
         
         {# Module specific JavaScript #}
         {% block module_javascripts %}{% endblock %}
+            <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/modules/advanced-ui.js') }}"></script>
+    <!-- Modules JS conditionnels -->
+    {% if app.request.attributes.get('_route') starts with 'app_colis_' %}
+        <script src="{{ asset('js/modules/colis.js') }}"></script>
+    {% endif %}
+    {% if app.request.attributes.get('_route') starts with 'app_colis_wizard_' %}
+        <script src="{{ asset('js/modules/wizard.js') }}"></script>
+    {% endif %}
         
         {# Page specific JavaScript #}
         {% block javascripts %}{% endblock %}

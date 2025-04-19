@@ -68,3 +68,21 @@ when@test:
         # Restreindre toutes les autres routes (optionnel, mais recommandé)
         - { path: ^/, roles: ROLE_USER }
 
+# Vous devrez ajouter ces configurations à votre fichier security.yaml existant
+# Assurez-vous de ne pas remplacer tout le fichier, mais d'ajouter/modifier ces valeurs
+
+# Dans la section firewalls -> main, ajoutez/modifiez ces configurations:
+firewalls:
+    main:
+        # ...autres configurations...
+        form_login:
+            login_path: app_login
+            check_path: app_login
+            enable_csrf: true
+            default_target_path: app_colis_index # Redirection après connexion
+            always_use_default_target_path: true
+        
+        # Redirection après déconnexion
+        logout:
+            path: app_logout
+            target: app_home # Redirection vers la page d'accueil après déconnexion

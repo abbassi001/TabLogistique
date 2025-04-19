@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: tab-logistique
+    env: docker  # OK ici
+    plan: free
+    repo: https://github.com/TON-UTILISATEUR/TON-REPO
+    dockerfilePath: ./Dockerfile
+    buildCommand: ""
+    startCommand: "php-fpm"
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_SECRET
+        value: votre_cle_secrete
+      - key: DATABASE_URL
+        value: postgresql://utilisateur:motdepasse@host:port/nomdb

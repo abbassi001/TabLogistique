@@ -1,0 +1,306 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TAB Logistique - Système de Gestion de Colis{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Styles spécifiques à la page d'accueil */
+        .hero-section {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .feature-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-section {
+            background-color: #f8f9fa;
+            padding: 4rem 0;
+            margin: 3rem 0;
+            border-radius: 10px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #0d6efd;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #20c997 0%, #0ca678 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-section {
+            background-color: #343a40;
+            color: white;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        .login-btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .login-btn-secondary {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Bouton de connexion fixe en haut de la page -->
+    <a href="{{ path('app_login') }}" class="btn btn-light login-btn-secondary">
+        <i class="fas fa-sign-in-alt me-2"></i>Connexion
+    </a>
+
+    <!-- Section héros -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <i class="fas fa-box me-2"></i>TAB Logistique
+                </h1>
+                <p class="hero-subtitle">Système de gestion de colis efficace et intuitif</p>
+                <a href="{{ path('app_login') }}" class="btn btn-light btn-lg login-btn">
+                    <i class="fas fa-sign-in-alt me-2"></i>Connexion au système
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section des fonctionnalités -->
+    <section class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Fonctionnalités principales</h2>
+            <p class="text-muted">Découvrez les outils qui simplifient la gestion de vos colis</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-primary">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Gestion des Colis</h3>
+                        <p class="text-muted">Suivez chaque colis de l'expédition à la livraison avec un système de tracking avancé.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Gestion des Contacts</h3>
+                        <p class="text-muted">Gérez facilement les expéditeurs et destinataires avec toutes leurs informations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-danger">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Suivi des Transports</h3>
+                        <p class="text-muted">Organisez vos transports et suivez leur progression en temps réel.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-info">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Statuts Personnalisés</h3>
+                        <p class="text-muted">Définissez et suivez chaque étape du processus avec des statuts personnalisables.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-warning">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Gestion d'Entrepôts</h3>
+                        <p class="text-muted">Gérez vos entrepôts et optimisez le stockage de vos colis.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-secondary">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="h5 mb-3">Tableau de Bord</h3>
+                        <p class="text-muted">Visualisez vos données clés et prenez des décisions éclairées avec des statistiques en temps réel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section des statistiques -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Notre Impact</h2>
+                <p class="text-muted">Des chiffres qui parlent d'eux-mêmes</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">5000+</div>
+                        <div class="stat-label">Colis gérés par mois</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">99.8%</div>
+                        <div class="stat-label">Taux de livraison réussie</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Pays desservis</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support disponible</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Section d'appel à l'action -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="fw-bold mb-4">Prêt à commencer ?</h2>
+            <p class="mb-4">Connectez-vous à votre compte pour accéder à toutes les fonctionnalités</p>
+            <a href="{{ path('app_login') }}" class="btn btn-light btn-lg login-btn">
+                <i class="fas fa-sign-in-alt me-2"></i>Connexion au système
+            </a>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-box me-2"></i>TAB Logistique</h5>
+                    <p>Système de gestion de colis efficace et intuitif</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; {{ "now"|date("Y") }} TAB Logistique. Tous droits réservés.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation pour les cartes de fonctionnalités
+            const featureCards = document.querySelectorAll('.feature-card');
+            featureCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+{% endblock %}

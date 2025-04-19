@@ -18,423 +18,494 @@
             </li>
         </ul>
     </div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i>Retour au tableau de bord
+                </a>
+            {% else %}
+                <a href="{{ path('app_home') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i>Retour à l'accueil
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="sidebar-footer">
+        <p class="text-center text-muted">© 2023 TAB Logistique</p>
+    </div>
 </nav>
 {% endblock %}
 
 {% block main_class %}col-md-10{% endblock %}
 
 {% block body %}
-    <!-- Messages flash -->
+    <!-- Flash messages -->
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show mb-4" role="alert">
+            <div class="alert alert-{{ label }} alert-dismissible fade show mt-3" role="alert">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
-
-    <div class="container-fluid mx-auto px-4 py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="text-3xl font-bold text-gray-800"><i class="fas fa-boxes me-2"></i>Gestion des Colis</h1>
-            
-            {% if is_granted('ROLE_USER') %}
-                <a href="{{ path('app_colis_wizard_start') }}" class="btn btn-primary">
-                    <i class="fas fa-plus-circle me-2"></i>Nouveau Colis
-                </a>
-            {% endif %}
-        </div>
-
-        <!-- Filtres et recherche -->
+    
+    <div class="container-fluid p-4">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Filtres</h5>
-                <button class="btn btn-sm btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-box me-2 text-primary"></i>Liste des Colis
+                </h1>
+                <a href="{{ path('app_colis_wizard_start') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Nouveau Colis
+                </a>
             </div>
-            <div class="collapse" id="collapseFilters">
-                <div class="card-body">
-                    <form method="get" action="{{ path('app_colis_index') }}" class="row g-3">
-                        <div class="col-md-3">
-                            <label for="tracking" class="form-label">Code tracking</label>
-                            <input type="text" class="form-control" id="tracking" name="tracking" placeholder="Rechercher un code">
+            
+            <div class="card-body">
+                <!-- Search and Filter Row -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+                            <input type="text" id="colisSearch" class="form-control" placeholder="Rechercher un colis...">
                         </div>
-                        <div class="col-md-3">
-                            <label for="statut" class="form-label">Statut</label>
-                            <select class="form-select" id="statut" name="statut">
-                                <option value="">Tous les statuts</option>
-                                <option value="en_attente">En attente</option>
-                                <option value="recu">Reçu</option>
-                                <option value="en_transit">En transit</option>
-                                <option value="en_livraison">En livraison</option>
-                                <option value="livre">Livré</option>
-                                <option value="retourne">Retourné</option>
-                                <option value="bloque_douane">Bloqué en douane</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label for="date_from" class="form-label">Date de début</label>
-                            <input type="date" class="form-control" id="date_from" name="date_from">
-                        </div>
-                        <div class="col-md-3">
-                            <label for="date_to" class="form-label">Date de fin</label>
-                            <input type="date" class="form-control" id="date_to" name="date_to">
-                        </div>
-                        <div class="col-12 text-end">
-                            <button type="reset" class="btn btn-secondary me-2">
-                                <i class="fas fa-undo me-1"></i>Réinitialiser
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-filter me-1"></i>Filtrer par statut
                             </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search me-1"></i>Rechercher
-                            </button>
+                            <ul class="dropdown-menu shadow-sm" aria-labelledby="statusFilterDropdown">
+                                <li><a class="dropdown-item status-filter active" href="#" data-status="all">Tous les statuts</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="en_attente">
+                                    <span class="status-indicator bg-secondary me-2"></span>En attente
+                                </a></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="recu">
+                                    <span class="status-indicator bg-info me-2"></span>Reçu
+                                </a></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="en_transit">
+                                    <span class="status-indicator bg-primary me-2"></span>En transit
+                                </a></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="en_livraison">
+                                    <span class="status-indicator bg-purple me-2"></span>En livraison
+                                </a></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="livre">
+                                    <span class="status-indicator bg-success me-2"></span>Livré
+                                </a></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="retourne">
+                                    <span class="status-indicator bg-danger me-2"></span>Retourné
+                                </a></li>
+                                <li><a class="dropdown-item status-filter" href="#" data-status="bloque_douane">
+                                    <span class="status-indicator bg-danger me-2"></span>Bloqué en douane
+                                </a></li>
+                            </ul>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Actions rapides -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-body py-3">
-                <div class="row">
-                    <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-file-export text-primary"></i>
+                
+                <!-- Selection Counter Section -->
+                <div class="card shadow-sm mb-3">
+                    <div class="px-3 py-2 d-flex justify-content-between align-items-center bg-light">
+                        <div id="selectedItemsCounter-container" style="display: none;">
+                            <span class="badge bg-primary"><span id="selectedItemsCounter">0</span> colis sélectionné(s)</span>
+                        </div>
+                        <div class="d-flex gap-2" id="bulkActionButtons" style="display: none;">
+                            <button class="btn btn-sm btn-outline-primary" id="printSelectionBtn">
+                                <i class="fas fa-print me-1"></i>Imprimer
+                            </button>
+                            <button class="btn btn-sm btn-outline-success" id="generateLabelsBtn">
+                                <i class="fas fa-tags me-1"></i>Étiquettes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions rapides -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body py-3">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-file-export text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Exporter</h6>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ path('app_colis_export', {'format': 'csv'}) }}" class="export-btn btn btn-link text-decoration-none p-0 me-2">CSV</a>
+                                            <a href="{{ path('app_colis_export', {'format': 'excel'}) }}" class="export-btn btn btn-link text-decoration-none p-0 me-2">Excel</a>
+                                            <a href="{{ path('app_colis_export', {'format': 'pdf'}) }}" class="export-btn btn btn-link text-decoration-none p-0">PDF</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h6 class="mb-0">Exporter</h6>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-link text-decoration-none p-0 me-2">CSV</button>
-                                    <button class="btn btn-link text-decoration-none p-0 me-2">Excel</button>
-                                    <button class="btn btn-link text-decoration-none p-0">PDF</button>
+                            <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-print text-success"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Imprimer</h6>
+                                        <button id="printSelection" class="btn btn-link text-decoration-none p-0">Sélection</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-tags text-info"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Étiquettes</h6>
+                                        <button id="generateLabels" class="btn btn-link text-decoration-none p-0">Générer</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-sync-alt text-warning"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0">Statut</h6>
+                                        <button class="btn btn-link text-decoration-none p-0" data-bs-toggle="modal" data-bs-target="#bulkStatusModal">Mise à jour</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-print text-success"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Imprimer</h6>
-                                <button class="btn btn-link text-decoration-none p-0">Sélection</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6 mb-2 mb-md-0">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-tags text-info"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Étiquettes</h6>
-                                <button class="btn btn-link text-decoration-none p-0">Générer</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
-                                <i class="fas fa-sync-alt text-warning"></i>
-                            </div>
-                            <div>
-                                <h6 class="mb-0">Statut</h6>
-                                <button class="btn btn-link text-decoration-none p-0" data-bs-toggle="modal" data-bs-target="#bulkStatusModal">Mise à jour</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Tableau des colis -->
-        <div class="card shadow-sm mb-4">
-            <div class="card-header bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">
-                        <i class="fas fa-table me-2"></i>Liste des colis
-                        <span class="badge bg-secondary ms-2">{{ colis|length }}</span>
-                    </h5>
-                    <div class="d-flex">
-                        <div class="dropdown me-2">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownColumns" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-columns me-1"></i>Colonnes
-                            </button>
-                            <ul class="dropdown-menu shadow-sm" aria-labelledby="dropdownColumns">
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> ID</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Tracking</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Dimensions</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Poids</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Valeur</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Date de création</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Marchandise</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Destinataire</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Expéditeur</a></li>
-                                <li><a class="dropdown-item" href="#"><input class="form-check-input me-2" type="checkbox" checked> Statut</a></li>
-                            </ul>
-                        </div>
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-expand-arrows-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body p-0">
+                
+                <!-- Table -->
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="px-3 py-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="checkAll">
-                                    </div>
-                                </th>
-                                <th class="px-3 py-3" style="min-width: 60px;">ID</th>
-                                <th class="px-3 py-3" style="min-width: 120px;">Tracking</th>
-                                <th class="px-3 py-3" style="min-width: 100px;">Dimensions</th>
-                                <th class="px-3 py-3" style="min-width: 80px;">Poids</th>
-                                <th class="px-3 py-3" style="min-width: 80px;">Valeur</th>
-                                <th class="px-3 py-3" style="min-width: 120px;">Création</th>
-                                <th class="px-3 py-3" style="min-width: 150px;">Marchandise</th>
-                                <th class="px-3 py-3" style="min-width: 150px;">Destinataire</th>
-                                <th class="px-3 py-3" style="min-width: 150px;">Expéditeur</th>
-                                <th class="px-3 py-3" style="min-width: 120px;">Statut</th>
-                                <th class="px-3 py-3 text-end" style="min-width: 100px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for coli in colis %}
-                                <tr>
-                                    <td class="px-3 py-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="{{ coli.id }}">
-                                        </div>
-                                    </td>
-                                    <td class="px-3 py-2 text-muted">#{{ coli.id }}</td>
-                                    <td class="px-3 py-2">
-                                        <span class="d-flex align-items-center">
-                                            <i class="fas fa-barcode me-2 text-primary"></i>
-                                            <span class="fw-medium">{{ coli.codeTracking }}</span>
-                                        </span>
-                                    </td>
-                                    <td class="px-3 py-2">{{ coli.dimensions }}</td>
-                                    <td class="px-3 py-2">{{ coli.poids }} kg</td>
-                                    <td class="px-3 py-2">{{ coli.valeurDeclaree }} €</td>
-                                    <td class="px-3 py-2">{{ coli.dateCreation|date('d/m/Y') }}</td>
-                                    <td class="px-3 py-2">
-                                        <div>
-                                            <span class="d-block fw-medium">{{ coli.natureMarchandise }}</span>
-                                            {% if coli.descriptionMarchandise %}
-                                                <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">{{ coli.descriptionMarchandise }}</small>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        {% if coli.destinataire %}
-                                            <div>
-                                                <span class="d-block fw-medium">{{ coli.destinataire.nomEntrepriseIndividu }}</span>
-                                                <small class="text-muted">{{ coli.destinataire.pays }}</small>
-                                            </div>
-                                        {% else %}
-                                            <span class="text-muted fst-italic">Non défini</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        {% if coli.expediteur %}
-                                            <div>
-                                                <span class="d-block fw-medium">{{ coli.expediteur.nomEntrepriseIndividu }}</span>
-                                                <small class="text-muted">{{ coli.expediteur.pays }}</small>
-                                            </div>
-                                        {% else %}
-                                            <span class="text-muted fst-italic">Non défini</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-3 py-2">
-                                        {% set lastStatut = coli.statuts|last %}
-                                        {% if lastStatut %}
-                                            <span class="badge rounded-pill 
-                                                {{ lastStatut.typeStatut.value == 'en_attente' ? 'bg-warning text-dark' : 
-                                                   lastStatut.typeStatut.value == 'recu' ? 'bg-success' : 
-                                                   lastStatut.typeStatut.value == 'en_transit' ? 'bg-info' : 
-                                                   lastStatut.typeStatut.value == 'en_livraison' ? 'bg-primary' : 
-                                                   lastStatut.typeStatut.value == 'livre' ? 'bg-success' : 
-                                                   lastStatut.typeStatut.value == 'retourne' ? 'bg-danger' : 
-                                                   lastStatut.typeStatut.value == 'bloque_douane' ? 'bg-danger' : 'bg-secondary' }}">
-                                                <i class="fas 
-                                                    {{ lastStatut.typeStatut.value == 'en_attente' ? 'fa-clock' : 
-                                                       lastStatut.typeStatut.value == 'recu' ? 'fa-check-circle' : 
-                                                       lastStatut.typeStatut.value == 'en_transit' ? 'fa-truck-moving' : 
-                                                       lastStatut.typeStatut.value == 'en_livraison' ? 'fa-shipping-fast' : 
-                                                       lastStatut.typeStatut.value == 'livre' ? 'fa-check-double' : 
-                                                       lastStatut.typeStatut.value == 'retourne' ? 'fa-undo' : 
-                                                       lastStatut.typeStatut.value == 'bloque_douane' ? 'fa-ban' : 'fa-info-circle' }} 
-                                                    me-1"></i>
-                                                {{ lastStatut.typeStatut.value|replace({'_': ' '})|title }}
-                                            </span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Non défini</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="px-3 py-2 text-end">
-                                        <div class="btn-group">
-                                            <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Voir">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </a>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <span class="visually-hidden">Plus</span>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-clipboard-list me-2 text-primary"></i>Modifier statut</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2 text-success"></i>Imprimer étiquette</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="fas fa-clone me-2 text-info"></i>Dupliquer</a></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <a class="dropdown-item text-danger" href="#" onclick="if(confirm('Êtes-vous sûr de vouloir supprimer ce colis?')) document.getElementById('delete-form-{{ coli.id }}').submit(); return false;">
-                                                        <i class="fas fa-trash-alt me-2"></i>Supprimer
-                                                    </a>
-                                                    <form id="delete-form-{{ coli.id }}" action="{{ path('app_colis_delete', {'id': coli.id}) }}" method="post" style="display: none;">
-                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ coli.id) }}">
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td colspan="12" class="text-center py-5">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <div class="rounded-circle bg-light p-4 mb-3">
-                                                <i class="fas fa-box-open fa-3x text-muted"></i>
-                                            </div>
-                                            <h5 class="text-muted mb-1">Aucun colis trouvé</h5>
-                                            <p class="text-muted">Commencez par créer un nouveau colis</p>
-                                            {% if is_granted('ROLE_USER') %}
-                                                <a href="{{ path('app_colis_wizard_start') }}" class="btn btn-primary mt-2">
-                                                    <i class="fas fa-plus-circle me-2"></i>Nouveau Colis
-                                                </a>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card-footer bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="text-muted">Affichage de {{ colis|length }} colis</span>
+<table class="table table-hover table-striped align-middle">
+    <thead class="table-light">
+        <tr>
+            <th width="40">
+                <input type="checkbox" class="form-check-input" id="selectAll">
+            </th>
+            <th>ID</th>
+            <th>Code Tracking</th>
+            <th>Référence</th>
+            <th>Date Création</th>
+            <th>Statut</th>
+            <th>Destinataire</th>
+            <th>Expéditeur</th>
+            <th>Poids</th>
+            <th>Statut</th>
+
+            <th class="text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for coli in colis %}
+            <tr>
+                <td class="px-3 py-2">
+                    <div class="form-check">
+                        <input class="form-check-input row-checkbox" type="checkbox" value="{{ coli.id }}">
                     </div>
-                    
-                    <!-- Pagination -->
-                    {% if pagination is defined and pagination.totalPages > 1 %}
-                        <nav>
-                            <ul class="pagination mb-0">
-                                <li class="page-item {{ pagination.currentPage == 1 ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ path('app_colis_index', {'page': 1}) }}" aria-label="First">
-                                        <span aria-hidden="true"><i class="fas fa-angle-double-left"></i></span>
-                                    </a>
-                                </li>
-                                <li class="page-item {{ pagination.currentPage == 1 ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ path('app_colis_index', {'page': pagination.currentPage > 1 ? pagination.currentPage - 1 : 1}) }}" aria-label="Previous">
-                                        <span aria-hidden="true"><i class="fas fa-angle-left"></i></span>
-                                    </a>
-                                </li>
-                                
-                                {% for i in max(1, pagination.currentPage - 2)..min(pagination.totalPages, pagination.currentPage + 2) %}
-                                    <li class="page-item {{ pagination.currentPage == i ? 'active' : '' }}">
-                                        <a class="page-link" href="{{ path('app_colis_index', {'page': i}) }}">{{ i }}</a>
-                                    </li>
-                                {% endfor %}
-                                
-                                <li class="page-item {{ pagination.currentPage == pagination.totalPages ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ path('app_colis_index', {'page': pagination.currentPage < pagination.totalPages ? pagination.currentPage + 1 : pagination.totalPages}) }}" aria-label="Next">
-                                        <span aria-hidden="true"><i class="fas fa-angle-right"></i></span>
-                                    </a>
-                                </li>
-                                <li class="page-item {{ pagination.currentPage == pagination.totalPages ? 'disabled' : '' }}">
-                                    <a class="page-link" href="{{ path('app_colis_index', {'page': pagination.totalPages}) }}" aria-label="Last">
-                                        <span aria-hidden="true"><i class="fas fa-angle-double-right"></i></span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                </td>
+                <td class="px-3 py-2">{{ coli.id }}</td>
+                <td class="px-3 py-2">
+                    <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="text-decoration-none fw-bold">
+                        {{ coli.codeTracking }}
+                    </a>
+                </td>
+                <td class="px-3 py-2">{{ coli.reference ?? 'N/A' }}</td>
+                <td class="px-3 py-2">{{ coli.dateCreation ? coli.dateCreation|date('d/m/Y') : 'N/A' }}</td>
+              
+                <td class="px-3 py-2">
+                    {% if coli.destinataire %}
+                        <div>
+                            <span class="d-block fw-medium">{{ coli.destinataire.nomEntrepriseIndividu }}</span>
+                            <small class="text-muted">{{ coli.destinataire.pays ?? 'N/A' }}</small>
+                        </div>
+                    {% else %}
+                        <span class="text-muted fst-italic">Non défini</span>
                     {% endif %}
+                </td>
+                <td class="px-3 py-2">
+                    {% if coli.expediteur %}
+                        <div>
+                            <span class="d-block fw-medium">{{ coli.expediteur.nomEntrepriseIndividu }}</span>
+                            <small class="text-muted">{{ coli.expediteur.pays ?? 'N/A' }}</small>
+                        </div>
+                    {% else %}
+                        <span class="text-muted fst-italic">Non défini</span>
+                    {% endif %}
+                </td>
+                <td class="px-3 py-2">{{ coli.poids ? coli.poids ~ ' kg' : 'N/A' }}</td>
+                  <td class="px-3 py-2">
+                    {% set lastStatut = coli.statuts|last %}
+                    {% if lastStatut %}
+                        <span class="badge rounded-pill status-{{ lastStatut.typeStatut.value }}
+                            {% if lastStatut.typeStatut.value == 'en_attente' %}bg-warning text-dark
+                            {% elseif lastStatut.typeStatut.value == 'recu' %}bg-success
+                            {% elseif lastStatut.typeStatut.value == 'en_transit' %}bg-info
+                            {% elseif lastStatut.typeStatut.value == 'en_livraison' %}bg-primary
+                            {% elseif lastStatut.typeStatut.value == 'livre' %}bg-success
+                            {% elseif lastStatut.typeStatut.value == 'retourne' %}bg-danger
+                            {% elseif lastStatut.typeStatut.value == 'bloque_douane' %}bg-danger
+                            {% else %}bg-secondary{% endif %}"
+                            data-status="{{ lastStatut.typeStatut.value }}">
+                            <i class="fas 
+                                {% if lastStatut.typeStatut.value == 'en_attente' %}fa-clock
+                                {% elseif lastStatut.typeStatut.value == 'recu' %}fa-check-circle
+                                {% elseif lastStatut.typeStatut.value == 'en_transit' %}fa-truck-moving
+                                {% elseif lastStatut.typeStatut.value == 'en_livraison' %}fa-shipping-fast
+                                {% elseif lastStatut.typeStatut.value == 'livre' %}fa-check-double
+                                {% elseif lastStatut.typeStatut.value == 'retourne' %}fa-undo
+                                {% elseif lastStatut.typeStatut.value == 'bloque_douane' %}fa-ban
+                                {% else %}fa-info-circle{% endif %} 
+                                me-1"></i>
+                            {{ lastStatut.typeStatut.value|replace({'_': ' '})|title }}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary status-none" data-status="none">Non défini</span>
+                    {% endif %}
+                </td>
+                <td class="px-3 py-2 text-center">
+                    <div class="btn-group btn-group-sm">
+                        <a href="{{ path('app_colis_show', {'id': coli.id}) }}" class="btn btn-info" data-bs-toggle="tooltip" title="Détails">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ path('app_colis_edit', {'id': coli.id}) }}" class="btn btn-warning" data-bs-toggle="tooltip" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        {# Delete button removed as requested #}
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11" class="text-center py-5">
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Aucun colis trouvé
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
                 </div>
+                
+                <!-- Pagination -->
+                {% if pagination.totalPages > 1 %}
+                    <nav aria-label="Page navigation" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item {{ pagination.currentPage == 1 ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ path('app_colis_index', {'page': pagination.currentPage - 1}) }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            
+                            {% for i in 1..pagination.totalPages %}
+                                <li class="page-item {{ pagination.currentPage == i ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ path('app_colis_index', {'page': i}) }}">{{ i }}</a>
+                                </li>
+                            {% endfor %}
+                            
+                            <li class="page-item {{ pagination.currentPage == pagination.totalPages ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ path('app_colis_index', {'page': pagination.currentPage + 1}) }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
             </div>
         </div>
     </div>
+{% endblock %}
 
-    <!-- Modal pour la mise à jour des statuts en masse -->
-    <div class="modal fade" id="bulkStatusModal" tabindex="-1" aria-labelledby="bulkStatusModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="bulkStatusModalLabel">Mise à jour des statuts</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="bulk-status-form" method="post">
-                        <div class="mb-3">
-                            <label for="bulk_statut_type" class="form-label">Type de statut</label>
-                            <select class="form-select" id="bulk_statut_type" name="bulk_statut_type" required>
-                                <option value="">Sélectionnez un statut</option>
-                                <option value="en_attente">En attente</option>
-                                <option value="recu">Reçu</option>
-                                <option value="en_transit">En transit</option>
-                                <option value="en_livraison">En livraison</option>
-                                <option value="livre">Livré</option>
-                                <option value="retourne">Retourné</option>
-                                <option value="bloque_douane">Bloqué en douane</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bulk_localisation" class="form-label">Localisation</label>
-                            <input type="text" class="form-control" id="bulk_localisation" name="bulk_localisation" 
-                                placeholder="Ex: Paris, France - Entrepôt central" required>
-                        </div>
-                        <p class="text-muted small">
-                            <i class="fas fa-info-circle me-1"></i>Cette action mettra à jour le statut de tous les colis sélectionnés.
-                        </p>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" class="btn btn-primary" onclick="document.getElementById('bulk-status-form').submit()">
-                        <i class="fas fa-save me-1"></i>Enregistrer
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JavaScript pour la page -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialiser les tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            })
+{% block javascripts %}
+{{ parent() }}
+<script>
+// Status filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all status filter items
+    const statusFilters = document.querySelectorAll('.status-filter');
+    
+    // Add click event to each filter item
+    statusFilters.forEach(filter => {
+        filter.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            // Fonction pour cocher/décocher toutes les cases
-            const checkAllBox = document.getElementById('checkAll');
-            if (checkAllBox) {
-                checkAllBox.addEventListener('change', function() {
-                    const checkboxes = document.querySelectorAll('tbody .form-check-input');
-                    checkboxes.forEach(checkbox => {
-                        checkbox.checked = checkAllBox.checked;
-                    });
-                });
+            // Update active class
+            statusFilters.forEach(item => item.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Get selected status
+            const status = this.getAttribute('data-status');
+            
+            // Update dropdown button text (optional)
+            const filterButton = this.closest('.btn-group').querySelector('.dropdown-toggle');
+            if (filterButton) {
+                if (status === 'all') {
+                    filterButton.innerHTML = '<i class="fas fa-filter me-1"></i>Filtrer par statut';
+                } else {
+                    filterButton.innerHTML = '<i class="fas fa-filter me-1"></i>' + this.textContent.trim();
+                }
             }
+            
+            // Filter the table rows
+            filterTableByStatus(status);
         });
-    </script>
+    });
+    
+    // Filter function
+    function filterTableByStatus(status) {
+        const tableRows = document.querySelectorAll('table tbody tr');
+        
+        tableRows.forEach(row => {
+            // Skip placeholder rows (no data rows)
+            if (row.querySelector('td[colspan]')) return;
+            
+            if (status === 'all') {
+                // Show all rows if "All" is selected
+                row.style.display = '';
+                return;
+            }
+            
+            // Get the status badge in this row
+            const statusBadge = row.querySelector('[data-status]');
+            if (!statusBadge) {
+                row.style.display = 'none';
+                return;
+            }
+            
+            // Get status from data attribute
+            const rowStatus = statusBadge.getAttribute('data-status');
+            
+            // Show/hide based on status match
+            row.style.display = (rowStatus === status) ? '' : 'none';
+        });
+    }
+    
+    // Search functionality
+    const searchInput = document.getElementById('colisSearch');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const tableRows = document.querySelectorAll('table tbody tr');
+            
+            tableRows.forEach(row => {
+                // Skip placeholder rows
+                if (row.querySelector('td[colspan]')) return;
+                
+                const cells = row.querySelectorAll('td');
+                let found = false;
+                
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                        found = true;
+                    }
+                });
+                
+                row.style.display = found ? '' : 'none';
+            });
+        });
+    }
+    
+    // Row selection and print functionality
+    const rowCheckboxes = document.querySelectorAll('input.row-checkbox');
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const counterContainer = document.getElementById('selectedItemsCounter-container');
+    const counterElement = document.getElementById('selectedItemsCounter');
+    const bulkActionButtons = document.getElementById('bulkActionButtons');
+    
+    // Update counter display
+    function updateCounter() {
+        const checkedCount = document.querySelectorAll('input.row-checkbox:checked').length;
+        
+        if (counterElement) {
+            counterElement.textContent = checkedCount;
+        }
+        
+        if (counterContainer) {
+            counterContainer.style.display = checkedCount > 0 ? 'block' : 'none';
+        }
+        
+        if (bulkActionButtons) {
+            bulkActionButtons.style.display = checkedCount > 0 ? 'flex' : 'none';
+        }
+    }
+    
+    // Add event listeners to checkboxes
+    rowCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateCounter);
+    });
+    
+    // Select all checkbox functionality
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateCounter();
+        });
+    }
+    
+    // Print functionality
+    const printButtons = [
+        document.getElementById('printSelection'),
+        document.getElementById('printSelectionBtn')
+    ];
+    
+    printButtons.forEach(button => {
+        if (button) {
+            button.addEventListener('click', function() {
+                // Get selected IDs
+                const selectedCheckboxes = document.querySelectorAll('input.row-checkbox:checked');
+                
+                if (selectedCheckboxes.length === 0) {
+                    alert('Veuillez sélectionner au moins un colis à imprimer.');
+                    return;
+                }
+                
+                const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+                
+                // Open print page in new window
+                const url = '/colis/print-selection?ids=' + selectedIds.join(',');
+                window.open(url, '_blank');
+            });
+        }
+    });
+    
+    // Labels functionality
+    const labelButtons = [
+        document.getElementById('generateLabels'),
+        document.getElementById('generateLabelsBtn')
+    ];
+    
+    labelButtons.forEach(button => {
+        if (button) {
+            button.addEventListener('click', function() {
+                // Get selected IDs
+                const selectedCheckboxes = document.querySelectorAll('input.row-checkbox:checked');
+                
+                if (selectedCheckboxes.length === 0) {
+                    alert('Veuillez sélectionner au moins un colis pour générer des étiquettes.');
+                    return;
+                }
+                
+                const selectedIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+                
+                // Open labels page in new window
+                const url = '/colis/labels?ids=' + selectedIds.join(',');
+                window.open(url, '_blank');
+            });
+        }
+    });
+    
+    // Initialize tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+    });
+});
+</script>
 {% endblock %}

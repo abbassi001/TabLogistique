@@ -23,25 +23,7 @@ final class EmployeController extends AbstractController{
         ]);
     }
 
-    #[Route('/new', name: 'app_employe_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $employe = new Employe();
-        $form = $this->createForm(EmployeType::class, $employe);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($employe);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_employe_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('employe/new.html.twig', [
-            'employe' => $employe,
-            'form' => $form,
-        ]);
-    }
+  
 
     #[Route('/{id}', name: 'app_employe_show', methods: ['GET'])]
     public function show(Employe $employe): Response

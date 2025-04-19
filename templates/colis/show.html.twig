@@ -505,12 +505,14 @@
                     <i class="fas fa-edit me-1"></i>Modifier
                 </a>
                 
-                <form method="post" action="{{ path('app_colis_delete', {'id': coli.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce colis?');" class="d-inline">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ coli.id) }}">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash-alt me-1"></i>Supprimer
-                    </button>
-                </form>
+             {% if is_granted('ROLE_ADMIN') %}
+    <form method="post" action="{{ path('app_colis_delete', {'id': coli.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet élément?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ coli.id) }}">
+        <button class="btn btn-danger">
+            <i class="fas fa-trash-alt me-1"></i>Supprimer
+        </button>
+    </form>
+{% endif %}
             </div>
         </div>
     </div>

@@ -1,234 +1,334 @@
-/* data-tables.css */
+/* Enhanced Dashboard CSS */
 
-/* Conteneur de table amélioré */
-.table-container {
+/* Dashboard container refinements */
+.dashboard-container {
+    padding: 20px;
+    background-color: #f5f7fa;
+    min-height: calc(100vh - 60px);
+  }
+  
+  /* Animation for dashboard elements */
+  .card-animate-ready {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  
+  .card-animated {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* Welcome card styling */
+  .border-left-primary {
+    border-left: 4px solid #0d6efd !important;
+  }
+  
+  .border-left-success {
+    border-left: 4px solid #198754 !important;
+  }
+  
+  .border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+  }
+  
+  .border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+  }
+  
+  /* Stats row improvements */
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px 30px;
+    gap: 10px;
+  }
+  
+  .stat-card {
+    flex: 1;
+    min-width: 240px;
+    margin: 10px;
+    border-radius: 12px;
     background: white;
-    border-radius: 10px;
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-card-body {
+    padding: 20px;
+    position: relative;
     overflow: hidden;
   }
   
-  .table-header {
-    padding: 15px 20px;
+  .stat-card-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 3rem;
+    opacity: 0.1;
+    transition: all 0.3s;
+  }
+  
+  .stat-card:hover .stat-card-icon {
+    transform: scale(1.2) rotate(15deg);
+    opacity: 0.2;
+  }
+  
+  .stat-card-title {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6c757d;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  
+  .stat-card-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  
+  .stat-card-footer {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+  
+  .stat-trend-up {
+    color: #198754;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stat-trend-down {
+    color: #dc3545;
+    display: flex;
+    align-items: center;
+  }
+  
+  .stat-trend-up i, .stat-trend-down i {
+    margin-right: 5px;
+  }
+  
+  .stat-period {
+    margin-left: auto;
+    color: #6c757d;
+    font-size: 0.8rem;
+  }
+  
+  /* Chart card enhancements */
+  .chart-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  
+  .chart-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chart-card-header {
+    padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e9ecef;
   }
   
-  .table-title {
+  .chart-card-title {
     margin: 0;
     font-weight: 600;
     display: flex;
     align-items: center;
+    font-size: 1.1rem;
   }
   
-  .table-title i {
+  .chart-card-title i {
     margin-right: 10px;
     color: #0d6efd;
   }
   
-  .table-controls {
+  .chart-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
   }
   
-  .table-body {
-    overflow-x: auto;
+  .chart-period-selector {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background: white;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    cursor: pointer;
   }
   
-  .table-advanced {
+  .chart-card-body {
+    padding: 20px;
+    height: 300px;
+    position: relative;
+  }
+  
+  /* Activity list improvements */
+  .activity-item {
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+  
+  .activity-item:hover {
+    transform: translateX(5px);
+    border-left-color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.03);
+  }
+  
+  /* Alert card styling */
+  .card-header.bg-warning {
+    background: linear-gradient(45deg, #ffc107, #ffb300) !important;
+    color: #212529;
+  }
+  
+  /* Task list styling */
+  .form-check-input:checked + .form-check-label {
+    text-decoration: line-through;
+    color: #6c757d;
+  }
+  
+  /* Performance progress bars */
+  .progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+  }
+  
+  .progress-bar {
+    border-radius: 4px;
+  }
+  
+  /* Card header buttons */
+  .btn-circle {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+  }
+  
+  .btn-circle:hover {
+    transform: rotate(15deg);
+  }
+  
+  /* Footer buttons */
+  .card-footer .btn {
+    transition: all 0.3s;
+  }
+  
+  .card-footer .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Notification styling */
+  #notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 300px;
+  }
+  
+  #notification-container .alert {
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-left: 4px solid;
+  }
+  
+  #notification-container .alert-success {
+    border-left-color: #198754;
+  }
+  
+  #notification-container .alert-info {
+    border-left-color: #0dcaf0;
+  }
+  
+  #notification-container .alert-warning {
+    border-left-color: #ffc107;
+  }
+  
+  #notification-container .alert-danger {
+    border-left-color: #dc3545;
+  }
+  
+  /* Loading overlay */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    margin-bottom: 0;
-    white-space: nowrap;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
   }
   
-  .table-advanced th {
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .stats-row {
+      flex-direction: column;
+    }
+    
+    .stat-card {
+      width: 100%;
+      margin: 5px 0;
+    }
+    
+    .chart-card-body {
+      height: 250px;
+    }
+  }
+  
+  /* Table styling enhanced */
+  .table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .table thead th {
     background-color: #f8f9fa;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 0.5px;
-    padding: 15px;
     color: #495057;
-    border-bottom: 2px solid #e9ecef;
-    white-space: nowrap;
-  }
-  
-  .table-advanced tbody tr {
-    transition: all 0.2s;
-  }
-  
-  .table-advanced tbody tr:hover {
-    background-color: rgba(13, 110, 253, 0.04);
-  }
-  
-  .table-advanced td {
-    padding: 15px;
-    vertical-align: middle;
     border-top: none;
-    border-bottom: 1px solid #e9ecef;
+    padding: 12px 15px;
   }
   
-  .table-footer {
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #e9ecef;
-    background-color: #f8f9fa;
+  .table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
   }
   
-  .table-info {
-    font-size: 0.9rem;
-    color: #6c757d;
-  }
-  
-  /* Cell avec données enrichies */
-  .cell-user {
-    display: flex;
-    align-items: center;
-  }
-  
-  .cell-user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    margin-right: 10px;
-    background-color: #e9ecef;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    color: #495057;
-    flex-shrink: 0;
-  }
-  
-  .cell-user-info {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .cell-user-name {
-    font-weight: 500;
-  }
-  
-  .cell-user-email {
-    font-size: 0.85rem;
-    color: #6c757d;
-  }
-  
-  /* Cell avec statut */
-  .cell-status {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 10px;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  
-  .cell-status i {
-    margin-right: 5px;
-  }
-  
-  .status-active {
-    background-color: rgba(25, 135, 84, 0.1);
-    color: #198754;
-  }
-  
-  .status-pending {
-    background-color: rgba(255, 193, 7, 0.1);
-    color: #ffc107;
-  }
-  
-  .status-blocked {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-  }
-  
-  .status-info {
-    background-color: rgba(13, 202, 240, 0.1);
-    color: #0dcaf0;
-  }
-  
-  /* Cell avec actions */
-  .cell-actions {
-    display: flex;
-    gap: 5px;
-  }
-  
-  .action-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6c757d;
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
+  .table-hover tbody tr {
     transition: all 0.2s;
   }
   
-  .action-btn:hover {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-  }
-  
-  .action-btn-danger:hover {
-    background-color: #dc3545;
-    border-color: #dc3545;
-  }
-  
-  .action-btn-success:hover {
-    background-color: #198754;
-    border-color: #198754;
-  }
-  
-  /* Pagination améliorée */
-  .pagination-advanced {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .pagination-advanced .page-item .page-link {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 3px;
-    border-radius: 6px;
-    border: 1px solid #dee2e6;
-    color: #495057;
-    background-color: white;
-    transition: all 0.2s;
-  }
-  
-  .pagination-advanced .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-    color: white;
-  }
-  
-  .pagination-advanced .page-item .page-link:hover {
-    background-color: #e9ecef;
-    color: #0d6efd;
-  }
-  
-  .pagination-advanced .page-item.active .page-link:hover {
-    background-color: #0b5ed7;
-    color: white;
-  }
-  
-  .pagination-advanced .page-item.disabled .page-link {
-    color: #6c757d;
-    background-color: #f8f9fa;
-    pointer-events: none;
+  .table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
   }

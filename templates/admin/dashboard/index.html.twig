@@ -4,32 +4,15 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/dahboard-cards.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard-cards.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('css/data-tables.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-user.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-forms.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/animations.css') }}">
+    <!-- Add our enhanced CSS -->
     <style>
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #0d6efd;
-        }
-        .btn-circle {
-            border-radius: 100%;
-            height: 2.5rem;
-            width: 2.5rem;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .activity-item {
-            transition: transform 0.2s;
-        }
-        .activity-item:hover {
-            transform: translateX(5px);
-        }
+        {% include 'admin/dashboard/_dashboard_styles.html.twig' %}
     </style>
 {% endblock %}
 
@@ -251,7 +234,10 @@
                     </div>
                 </div>
                 <div class="chart-card-body">
-                    <canvas id="statusChart"></canvas>
+                    <canvas id="statusChart" 
+                            data-labels="{{ ['En attente', 'En transit', 'Livré', 'Problème', 'Retourné']|json_encode|e('html_attr') }}"
+                            data-values="{{ status_data|json_encode|e('html_attr') }}"
+                            data-colors="{{ ['#ffc107', '#0dcaf0', '#198754', '#dc3545', '#e74a3b']|json_encode|e('html_attr') }}"></canvas>
                 </div>
             </div>
             
@@ -270,7 +256,9 @@
                     </div>
                 </div>
                 <div class="chart-card-body">
-                    <canvas id="monthlyPackagesChart"></canvas>
+                    <canvas id="monthlyPackagesChart" 
+                            data-sent="{{ monthly_data.sent|json_encode|e('html_attr') }}"
+                            data-delivered="{{ monthly_data.delivered|json_encode|e('html_attr') }}"></canvas>
                 </div>
             </div>
 
@@ -418,6 +406,9 @@
                             </div>
                             <small class="text-muted d-block mt-1">
                                 Échéance: {{ task.deadline|date('d/m/Y') }}
+                                <span class="badge bg-{{ task.priority == 'high' ? 'danger' : (task.priority == 'medium' ? 'warning' : 'info') }} float-end">
+                                    {{ task.priority == 'high' ? 'Haute' : (task.priority == 'medium' ? 'Moyenne' : 'Basse') }}
+                                </span>
                             </small>
                         </div>
                         {% else %}
@@ -442,111 +433,6 @@
 {{ parent() }}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Graphique distribution des statuts
-    const statusCtx = document.getElementById('statusChart').getContext('2d');
-    const statusChart = new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['En attente', 'En transit', 'Livré', 'Problème', 'Retourné'],
-            datasets: [{
-                data: {{ status_data|json_encode|raw }},
-                backgroundColor: [
-                    '#4e73df',
-                    '#1cc88a',
-                    '#36b9cc',
-                    '#f6c23e',
-                    '#e74a3b'
-                ],
-                hoverBackgroundColor: [
-                    '#2e59d9',
-                    '#17a673',
-                    '#2c9faf',
-                    '#dda20a',
-                    '#be2617'
-                ],
-                hoverBorderColor: "rgba(234, 236, 244, 1)",
-            }],
-        },
-        options: {
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                }
-            },
-            cutout: '70%'
-        }
-    });
-
-    // Graphique colis par mois
-    const monthlyCtx = document.getElementById('monthlyPackagesChart').getContext('2d');
-    const monthlyChart = new Chart(monthlyCtx, {
-        type: 'line',
-        data: {
-            labels: ['Jan', 'Fév', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'],
-            datasets: [{
-                label: 'Colis expédiés',
-                data: {{ monthly_data.sent|json_encode|raw }},
-                lineTension: 0.3,
-                backgroundColor: "rgba(78, 115, 223, 0.05)",
-                borderColor: "rgba(78, 115, 223, 1)",
-                pointRadius: 3,
-                pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointBorderColor: "rgba(78, 115, 223, 1)",
-                pointHoverRadius: 3,
-                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-                pointHitRadius: 10,
-                pointBorderWidth: 2,
-                fill: true
-            },
-            {
-                label: 'Colis livrés',
-                data: {{ monthly_data.delivered|json_encode|raw }},
-                lineTension: 0.3,
-                backgroundColor: "rgba(28, 200, 138, 0.05)",
-                borderColor: "rgba(28, 200, 138, 1)",
-                pointRadius: 3,
-                pointBackgroundColor: "rgba(28, 200, 138, 1)",
-                pointBorderColor: "rgba(28, 200, 138, 1)",
-                pointHoverRadius: 3,
-                pointHoverBackgroundColor: "rgba(28, 200, 138, 1)",
-                pointHoverBorderColor: "rgba(28, 200, 138, 1)",
-                pointHitRadius: 10,
-                pointBorderWidth: 2,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    // Bouton d'actualisation du tableau de bord
-    document.getElementById('refreshDashboard').addEventListener('click', function() {
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Actualisation...';
-        
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
-    });
-});
+{% include 'admin/dashboard/_dashboard_scripts.html.twig' %}
 </script>
 {% endblock %}

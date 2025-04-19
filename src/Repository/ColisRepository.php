@@ -45,12 +45,12 @@ class ColisRepository extends ServiceEntityRepository
         }
         
         if (!empty($filters['dateMin'])) {
-            $query->andWhere('c.dateCreation >= :dateMin')
+            $query->andWhere('c.date_creation >= :dateMin')
                 ->setParameter('dateMin', new \DateTime($filters['dateMin']));
         }
         
         if (!empty($filters['dateMax'])) {
-            $query->andWhere('c.dateCreation <= :dateMax')
+            $query->andWhere('c.date_creation <= :dateMax')
                 ->setParameter('dateMax', new \DateTime($filters['dateMax']));
         }
         
@@ -110,4 +110,53 @@ class ColisRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+ * Compte le nombre de colis créés dans les X derniers jours
+ */
+public function countRecentColis(int $days): int
+{
+    $date = new \DateTime();
+    $date->modify('-' . $days . ' days');
+
+    return $this->createQueryBuilder('c')
+        ->select('COUNT(c.id)')
+        ->where('c.date_creation >= :date')
+        ->setParameter('date', $date)
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+
+
+/**
+ * Compte le nombre de colis par mois pour l'année courante
+ */
+public function countMonthlyForYear(int $year = null): array
+{
+    $year = $year ?? (int) date('Y');
+    
+    $conn = $this->getEntityManager()->getConnection();
+    $sql = '
+        SELECT EXTRACT(MONTH FROM c.date_creation) as month, COUNT(c.id) as count
+        FROM colis c
+        WHERE EXTRACT(YEAR FROM c.date_creation) = :year
+        GROUP BY EXTRACT(MONTH FROM c.date_creation)
+        ORDER BY month ASC
+    ';
+    
+    $stmt = $conn->prepare($sql);
+    $resultSet = $stmt->executeQuery(['year' => $year]);
+    $results = $resultSet->fetchAllAssociative();
+    
+    // Initialiser tous les mois avec 0
+    $months = array_fill(1, 12, 0);
+    
+    // Remplir avec les données réelles
+    foreach ($results as $result) {
+        $months[(int)$result['month']] = (int)$result['count'];
+    }
+    
+    return $months;
+}
 }

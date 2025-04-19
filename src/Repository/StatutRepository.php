@@ -40,4 +40,39 @@ class StatutRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+// Ajouter ces méthodes à votre StatutRepository.php existant
+
+/**
+ * Compte le nombre de statuts par type
+ */
+public function countByType(\App\Enum\StatusType $statusType): int
+{
+    return $this->createQueryBuilder('s')
+        ->select('COUNT(s.id)')
+        ->where('s.type_statut = :type')
+        ->setParameter('type', $statusType->value)
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+/**
+ * Récupère la distribution des statuts actuels
+ */
+public function getStatusDistribution(): array
+{
+    $qb = $this->createQueryBuilder('s');
+    $qb->select('s.type_statut, COUNT(s.id) as count')
+       ->groupBy('s.type_statut');
+    
+    $results = $qb->getQuery()->getResult();
+    
+    $distribution = [];
+    foreach ($results as $result) {
+        $distribution[$result['type_statut']] = $result['count'];
+    }
+    
+    return $distribution;
+}
 }

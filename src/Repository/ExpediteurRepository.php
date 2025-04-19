@@ -40,4 +40,26 @@ class ExpediteurRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+// Ajouter ces méthodes à votre ExpediteurRepository.php existant
+
+/**
+ * Compte le nombre d'expéditeurs créés dans les X derniers jours
+ */
+public function countRecentExpediteurs(int $days): int
+{
+    // Note: Cette méthode assume que vous avez un champ date_creation dans votre entité Expediteur
+    // Si ce n'est pas le cas, vous devrez l'adapter à votre modèle
+    
+    $date = new \DateTime();
+    $date->modify('-' . $days . ' days');
+
+    return $this->createQueryBuilder('d')
+    ->select('COUNT(d.id)')
+    ->getQuery()
+    ->getSingleScalarResult();
+}
+
+// Ajouter ces méthodes à votre DestinataireRepository.php existant
+
 }

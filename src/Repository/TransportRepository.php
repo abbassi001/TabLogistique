@@ -40,4 +40,58 @@ class TransportRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+// Ajouter ces méthodes à votre TransportRepository.php existant
+
+/**
+ * Compte le nombre de transports par type
+ */
+public function countByType(): array
+{
+    $conn = $this->getEntityManager()->getConnection();
+    $sql = '
+        SELECT t.type_transport as type, COUNT(t.id) as count
+        FROM transport t
+        GROUP BY t.type_transport
+        ORDER BY count DESC
+    ';
+    
+    $stmt = $conn->prepare($sql);
+    $resultSet = $stmt->executeQuery();
+    $results = $resultSet->fetchAllAssociative();
+    
+    $counts = [];
+    foreach ($results as $result) {
+        $counts[$result['type']] = (int)$result['count'];
+    }
+    
+    return $counts;
+}
+
+/**
+ * Compte le nombre de transports par compagnie
+ */
+public function countByCompany(): array
+{
+    $conn = $this->getEntityManager()->getConnection();
+    $sql = '
+        SELECT t.compagnie_transport as company, COUNT(t.id) as count
+        FROM transport t
+        GROUP BY t.compagnie_transport
+        ORDER BY count DESC
+        LIMIT 5
+    ';
+    
+    $stmt = $conn->prepare($sql);
+    $resultSet = $stmt->executeQuery();
+    $results = $resultSet->fetchAllAssociative();
+    
+    $counts = [];
+    foreach ($results as $result) {
+        $counts[$result['company']] = (int)$result['count'];
+    }
+    
+    return $counts;
+}
 }

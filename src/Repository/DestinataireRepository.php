@@ -40,4 +40,22 @@ class DestinataireRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+
+/**
+ * Compte le nombre de destinataires créés dans les X derniers jours
+ */
+public function countRecentDestinataires(int $days): int
+{
+    // Note: Cette méthode assume que vous avez un champ date_creation dans votre entité Destinataire
+    // Si ce n'est pas le cas, vous devrez l'adapter à votre modèle
+    
+    $date = new \DateTime();
+    $date->modify('-' . $days . ' days');
+
+    return $this->createQueryBuilder('d')
+        ->select('COUNT(d.id)')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
 }
